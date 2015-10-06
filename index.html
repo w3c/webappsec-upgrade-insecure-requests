@@ -1192,7 +1192,7 @@ secure transport before fetching them.</p>
     it.</p>
      <p>As a stopgap measure, Megacorp injects the following header field into every
     HTML response that goes out from their servers:</p>
-<pre><a data-link-type="dfn" href="https://www.w3.org/TR/CSP2/#content-security-policy">Content-Security-Policy</a>: <a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a>
+<pre><a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#content-security-policy">Content-Security-Policy</a>: <a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a>
 </pre>
      <p>This automatically upgrades all insecure resource requests from their pages
     to secure variants, allowing a user agent to treat the following HTML code:</p>
@@ -1214,7 +1214,7 @@ secure transport before fetching them.</p>
     headers <a data-link-type="biblio" href="#biblio-rfc6797">[RFC6797]</a>, but does want to keep users on secure pages when
     possible. Happily, this comes for free with <code><a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a></code>. That is, they’re already
     delivering pages with the following header: 
-<pre><a data-link-type="dfn" href="https://www.w3.org/TR/CSP2/#content-security-policy">Content-Security-Policy</a>: <a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a>
+<pre><a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#content-security-policy">Content-Security-Policy</a>: <a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a>
 </pre>
      <p>This allows user agents to treat the following HTML code:</p>
 <pre>&lt;a href="http://example.com/">Home&lt;/a>
@@ -1266,7 +1266,7 @@ secure transport before fetching them.</p>
 <pre>server {
   ...
 
-  add_header <a data-link-type="dfn" href="https://www.w3.org/TR/CSP2/#content-security-policy">Content-Security-Policy</a> <a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a>;
+  add_header <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#content-security-policy">Content-Security-Policy</a> <a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a>;
 
   ...
 }
@@ -1287,7 +1287,7 @@ secure transport before fetching them.</p>
   ...
   
   add_header <a data-link-type="dfn" href="https://tools.ietf.org/html/rfc6797#section-6.1">Strict-Transport-Security</a> "max-age=10886400; preload"
-  add_header <a data-link-type="dfn" href="https://www.w3.org/TR/CSP2/#content-security-policy">Content-Security-Policy</a> <a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#block-all-mixed-content">block-all-mixed-content</a>;
+  add_header <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#content-security-policy">Content-Security-Policy</a> <a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#block-all-mixed-content">block-all-mixed-content</a>;
 
   ...
 }
@@ -1385,31 +1385,31 @@ secure transport before fetching them.</p>
     </ol>
     <h3 class="heading settled" data-level="3.1" id="delivery"><span class="secno">3.1. </span><span class="content"> The <code>upgrade-insecure-requests</code> Content Security Policy directive </span><a class="self-link" href="#delivery"></a></h3>
     <p>A server MAY instruct a user agent to upgrade insecure requests for a
-  particular <a data-link-type="dfn" href="https://www.w3.org/TR/CSP2/#protected-resource">protected resource</a> by sending a <code><a data-link-type="dfn" href="https://www.w3.org/TR/CSP2/#content-security-policy">Content-Security-Policy</a></code> header <a data-link-type="biblio" href="#biblio-csp">[CSP]</a> that contains a <dfn data-dfn-type="dfn" data-export="" id="upgrade-insecure-requests">upgrade-insecure-requests<a class="self-link" href="#upgrade-insecure-requests"></a></dfn> directive, defined via the
+  particular <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#protected-resource">protected resource</a> by sending a <code><a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#content-security-policy">Content-Security-Policy</a></code> header <a data-link-type="biblio" href="#biblio-csp">[CSP]</a> that contains a <dfn data-dfn-type="dfn" data-export="" id="upgrade-insecure-requests">upgrade-insecure-requests<a class="self-link" href="#upgrade-insecure-requests"></a></dfn> directive, defined via the
   following ABNF grammar:</p>
 <pre>directive-name  = "upgrade-insecure-requests"
 directive-value = ""
 </pre>
-    <p>When <a data-link-type="dfn" href="https://www.w3.org/TR/CSP2/#enforce">enforcing</a> the <code>upgrade-insecure-requests</code> directive:</p>
+    <p>When <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#enforce">enforcing</a> the <code>upgrade-insecure-requests</code> directive:</p>
     <ol>
-     <li> Let <var>settings</var> be the <a data-link-type="dfn" href="https://www.w3.org/TR/CSP2/#protected-resource">protected resource</a>’s <a data-link-type="dfn" href="http://www.w3.org/TR/html5/webappapis.html#incumbent-settings-object">incumbent
+     <li> Let <var>settings</var> be the <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#protected-resource">protected resource</a>’s <a data-link-type="dfn" href="http://www.w3.org/TR/html5/webappapis.html#incumbent-settings-object">incumbent
       settings object</a>. 
      <li> Set <var>setting</var>’s <a data-link-type="dfn" href="#insecure-requests-policy">insecure requests policy</a> to <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-upgrade">Upgrade</a>. 
-     <li> Let <var>tuple</var> be a tuple of the <a data-link-type="dfn" href="https://www.w3.org/TR/CSP2/#protected-resource">protected resource</a>’s <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url">URL</a></code>'s <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-host">host</a></code> and <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-port">port</a></code>. 
+     <li> Let <var>tuple</var> be a tuple of the <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#protected-resource">protected resource</a>’s <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url">URL</a></code>'s <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-host">host</a></code> and <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-port">port</a></code>. 
      <li> Insert <var>tuple</var> into <var>settings</var>’s <a data-link-type="dfn" href="#upgrade-insecure-navigations-set">upgrade insecure
       navigations set</a>. 
     </ol>
-    <p><a data-link-type="dfn" href="https://www.w3.org/TR/CSP2/#monitor">Monitoring</a> the <code>upgrade-insecure-requests</code> directive has
-  no effect: the directive is ignored when sent via a <code><a data-link-type="dfn" href="https://www.w3.org/TR/CSP2/#content-security-policy-report-only">Content-Security-Policy-Report-Only</a></code> header. Authors can
+    <p><a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#monitor">Monitoring</a> the <code>upgrade-insecure-requests</code> directive has
+  no effect: the directive is ignored when sent via a <code><a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#content-security-policy-report-only">Content-Security-Policy-Report-Only</a></code> header. Authors can
   determine whether or not upgraded resources' original URLs
-  were insecure via <code><a data-link-type="dfn" href="https://www.w3.org/TR/CSP2/#content-security-policy-report-only">Content-Security-Policy-Report-Only</a></code>. For
-  example, <code><a data-link-type="dfn" href="https://www.w3.org/TR/CSP2/#content-security-policy-report-only">Content-Security-Policy-Report-Only</a>:
+  were insecure via <code><a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#content-security-policy-report-only">Content-Security-Policy-Report-Only</a></code>. For
+  example, <code><a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#content-security-policy-report-only">Content-Security-Policy-Report-Only</a>:
   default-src https:; report-uri /endpoint</code>. See <a href="#reporting-upgrades">§3.4 Reporting Upgrades</a> for additional detail.</p>
     <h4 class="heading settled" data-level="3.1.1" id="mix"><span class="secno">3.1.1. </span><span class="content">Relation to "Mixed Content"</span><a class="self-link" href="#mix"></a></h4>
     <p>The <code><a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a></code> directive results in
   requests being rewritten at the top of the <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#fetching">Fetching</a> algorithm <a data-link-type="biblio" href="#biblio-fetch">[FETCH]</a>, as specified in <a href="#upgrade-request">§4.1 Upgrade request to a potentially secure URL, if appropriate</a>. It’s important to note that
   the rewrite happens <em>before</em> either Mixed Content <a data-link-type="biblio" href="#biblio-mix">[MIX]</a> or Content
-  Security Policy checks take effect <a data-link-type="biblio" href="#biblio-csp2">[CSP2]</a>.</p>
+  Security Policy checks take effect <a data-link-type="biblio" href="#biblio-csp">[CSP]</a>.</p>
     <p>This ordering means that upgraded requests <em>will not</em> be flagged as
   mixed content. Moreover, it means that <code><a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a></code>’s effect takes place before
   the <code><a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#block-all-mixed-content">block-all-mixed-content</a></code> directive would have a chance
@@ -1541,23 +1541,23 @@ Location: https://example.com/
     <h3 class="heading settled" data-level="3.4" id="reporting-upgrades"><span class="secno">3.4. </span><span class="content">Reporting Upgrades</span><a class="self-link" href="#reporting-upgrades"></a></h3>
     <p>Upgrading insecure requests MUST not interfere with an authors' ability to
   track down requests that would be insecure in a user agent that does not
-  support upgrades. To that end, upgrades MUST be performed <em>after</em> evaluating <var>request</var> against all <a data-link-type="dfn" href="https://www.w3.org/TR/CSP2/#monitor">monitored</a> security policies,
-  but <em>before</em> evaluating <var>request</var> against all <a data-link-type="dfn" href="https://www.w3.org/TR/CSP2/#enforce">enforced</a> policies.</p>
+  support upgrades. To that end, upgrades MUST be performed <em>after</em> evaluating <var>request</var> against all <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#monitor">monitored</a> security policies,
+  but <em>before</em> evaluating <var>request</var> against all <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#enforce">enforced</a> policies.</p>
     <div class="example" id="example-9ef88697">
-     <a class="self-link" href="#example-9ef88697"></a> Within the context of a <a data-link-type="dfn" href="https://www.w3.org/TR/CSP2/#protected-resource">protected resource</a> which contains the
+     <a class="self-link" href="#example-9ef88697"></a> Within the context of a <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#protected-resource">protected resource</a> which contains the
     insecure image <code>&lt;img src="http://example.com/image.png"></code>,
     and delivers the following HTTP headers: 
-<pre><a data-link-type="dfn" href="https://www.w3.org/TR/CSP2/#content-security-policy">Content-Security-Policy</a>: <a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a>; <a data-link-type="dfn" href="https://www.w3.org/TR/CSP2/#default-src">default-src</a> https:
-<a data-link-type="dfn" href="https://www.w3.org/TR/CSP2/#content-security-policy-report-only">Content-Security-Policy-Report-Only</a>: <a data-link-type="dfn" href="https://www.w3.org/TR/CSP2/#default-src">default-src</a> https:; <a data-link-type="dfn" href="https://www.w3.org/TR/CSP2/#report-uri">report-uri</a> /endpoint
+<pre><a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#content-security-policy">Content-Security-Policy</a>: <a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a>; <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#default-src">default-src</a> https:
+<a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#content-security-policy-report-only">Content-Security-Policy-Report-Only</a>: <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#default-src">default-src</a> https:; <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#report-uri">report-uri</a> /endpoint
 </pre>
      <p>The user agent will fire off a <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request">request</a> <var>request</var> that:</p>
      <ol>
-      <li> Violates the policy being <a data-link-type="dfn" href="https://www.w3.org/TR/CSP2/#monitor">monitored</a>, thereby delivering a <a data-link-type="dfn" href="https://www.w3.org/TR/CSP2/#example-violation-report">violation report</a> to <code>/endpoint</code>. 
+      <li> Violates the policy being <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#monitor">monitored</a>, thereby delivering a <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#example-violation-report">violation report</a> to <code>/endpoint</code>. 
       <li> Is upgraded from <code>http://example.com/image.png</code> to <code>http<strong>s</strong>://example.com/image.png</code>. 
-      <li> Does not violate the policy being <a data-link-type="dfn" href="https://www.w3.org/TR/CSP2/#enforce">enforced</a>. 
+      <li> Does not violate the policy being <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#enforce">enforced</a>. 
      </ol>
     </div>
-    <p class="note" role="note">Note: This will be significantly clarified once <a data-link-type="biblio" href="#biblio-csp2">[CSP2]</a> is rewritten in terms
+    <p class="note" role="note">Note: This will be significantly clarified once <a data-link-type="biblio" href="#biblio-csp">[CSP]</a> is rewritten in terms
   of <a data-link-type="biblio" href="#biblio-fetch">[FETCH]</a>.</p>
    </section>
    <section>
@@ -1592,7 +1592,7 @@ Location: https://example.com/
          If <var>tuple</var> is contained in <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-client">client</a>’s <a data-link-type="dfn" href="#upgrade-insecure-navigations-set">upgrade insecure navigations set</a>, then skip the remaining
           substeps, and continue upgrading <var>request</var>. 
         <p class="note" role="note">Note: We only upgrade top-level <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#navigation-request">navigation requests</a> for hosts
-          that have explicitly opted-into the behavior for a particular <a data-link-type="dfn" href="https://www.w3.org/TR/CSP2/#protected-resource">protected resource</a>, as described in <a href="#examples">§1.2 Examples</a>. Performing
+          that have explicitly opted-into the behavior for a particular <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#protected-resource">protected resource</a>, as described in <a href="#examples">§1.2 Examples</a>. Performing
           upgrades for navigations to third-party resources brings a
           significantly higher potential for breakage, so we’re avoiding it for
           the moment.</p>
@@ -1698,13 +1698,13 @@ Location: https://example.com/
     <p>Legacy clients which do support mixed content blocking <a data-link-type="biblio" href="#biblio-mix">[MIX]</a>, but do not
   support the <code><a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a></code> directive will
   continue to have a suboptimal experience on pages containing <a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#a-priori-insecure-url"><i lang="la">a priori</i> insecure URLs</a>. Authors SHOULD ensure that
-  they collect <a data-link-type="dfn" href="https://www.w3.org/TR/CSP2/#send-violation-reports">violation reports</a> in order
+  they collect <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#send-violation-reports">violation reports</a> in order
   to determine which resources are most problematic for their users, and SHOULD
   use that information to prioritize fixes for URLs in legacy content that
   users will most likely request.</p>
     <h3 class="heading settled" data-level="8.2" id="relation-to-hsts"><span class="secno">8.2. </span><span class="content">Relation to HSTS</span><a class="self-link" href="#relation-to-hsts"></a></h3>
     <p>The mechanism specified here deals only with the security policy for a
-  specific <a data-link-type="dfn" href="https://www.w3.org/TR/CSP2/#protected-resource">protected resource</a>. It does not deprecate, replace, or in any
+  specific <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#protected-resource">protected resource</a>. It does not deprecate, replace, or in any
   way reduce the value of the <code>Strict-Transport-Security</code> HTTP
   response header <a data-link-type="biblio" href="#biblio-rfc6797">[RFC6797]</a>. Authors can and should continue to use that
   header to ensure that their users are not subject to SSL stripping downgrade
@@ -1799,19 +1799,19 @@ Location: https://example.com/
   <h3 class="no-num heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
   <ul class="indexlist">
    <li>
-    <a data-link-type="biblio" href="#biblio-csp2">[CSP2]</a> defines the following terms:
+    <a data-link-type="biblio" href="#biblio-csp">[CSP]</a> defines the following terms:
     <ul>
-     <li><a href="https://www.w3.org/TR/CSP2/#content-security-policy">content-security-policy</a>
-     <li><a href="https://www.w3.org/TR/CSP2/#content-security-policy-report-only">content-security-policy-report-only</a>
-     <li><a href="https://www.w3.org/TR/CSP2/#default-src">default-src</a>
-     <li><a href="https://www.w3.org/TR/CSP2/#enforce">enforce</a>
-     <li><a href="https://www.w3.org/TR/CSP2/#enforce">enforced</a>
-     <li><a href="https://www.w3.org/TR/CSP2/#monitor">monitor</a>
-     <li><a href="https://www.w3.org/TR/CSP2/#monitor">monitored</a>
-     <li><a href="https://www.w3.org/TR/CSP2/#protected-resource">protected resource</a>
-     <li><a href="https://www.w3.org/TR/CSP2/#report-uri">report-uri</a>
-     <li><a href="https://www.w3.org/TR/CSP2/#send-violation-reports">send violation reports</a>
-     <li><a href="https://www.w3.org/TR/CSP2/#example-violation-report">violation report</a>
+     <li><a href="https://www.w3.org/TR/CSP/#content-security-policy">content-security-policy</a>
+     <li><a href="https://www.w3.org/TR/CSP/#content-security-policy-report-only">content-security-policy-report-only</a>
+     <li><a href="https://www.w3.org/TR/CSP/#default-src">default-src</a>
+     <li><a href="https://www.w3.org/TR/CSP/#enforce">enforce</a>
+     <li><a href="https://www.w3.org/TR/CSP/#enforce">enforced</a>
+     <li><a href="https://www.w3.org/TR/CSP/#monitor">monitor</a>
+     <li><a href="https://www.w3.org/TR/CSP/#monitor">monitored</a>
+     <li><a href="https://www.w3.org/TR/CSP/#protected-resource">protected resource</a>
+     <li><a href="https://www.w3.org/TR/CSP/#report-uri">report-uri</a>
+     <li><a href="https://www.w3.org/TR/CSP/#send-violation-reports">send violation reports</a>
+     <li><a href="https://www.w3.org/TR/CSP/#example-violation-report">violation report</a>
     </ul>
    <li>
     <a data-link-type="biblio" href="#biblio-dom">[dom]</a> defines the following terms:
@@ -1918,9 +1918,7 @@ Location: https://example.com/
    <dt id="biblio-abnf"><a class="self-link" href="#biblio-abnf"></a>[ABNF]
    <dd>D. Crocker, Ed.; P. Overell. <a href="https://tools.ietf.org/html/rfc5234">Augmented BNF for Syntax Specifications: ABNF</a>. January 2008. Internet Standard. URL: <a href="https://tools.ietf.org/html/rfc5234">https://tools.ietf.org/html/rfc5234</a>
    <dt id="biblio-csp"><a class="self-link" href="#biblio-csp"></a>[CSP]
-   <dd>Mike West; Dan Veditz. <a href="https://w3c.github.io/webappsec/specs/content-security-policy/">Content Security Policy</a>. WD. URL: <a href="https://w3c.github.io/webappsec/specs/content-security-policy/">https://w3c.github.io/webappsec/specs/content-security-policy/</a>
-   <dt id="biblio-csp2"><a class="self-link" href="#biblio-csp2"></a>[CSP2]
-   <dd>Mike West; Adam Barth; Daniel Veditz. <a href="http://www.w3.org/TR/CSP2/">Content Security Policy Level 2</a>. 21 July 2015. CR. URL: <a href="http://www.w3.org/TR/CSP2/">http://www.w3.org/TR/CSP2/</a>
+   <dd>Mike West; Adam Barth; Dan Veditz. <a href="https://www.w3.org/TR/CSP/">Content Security Policy</a>. CR. URL: <a href="https://www.w3.org/TR/CSP/">https://www.w3.org/TR/CSP/</a>
    <dt id="biblio-fetch"><a class="self-link" href="#biblio-fetch"></a>[FETCH]
    <dd>Anne van Kesteren. <a href="https://fetch.spec.whatwg.org/">Fetch Standard</a>. Living Standard. URL: <a href="https://fetch.spec.whatwg.org/">https://fetch.spec.whatwg.org/</a>
    <dt id="biblio-mix"><a class="self-link" href="#biblio-mix"></a>[MIX]
