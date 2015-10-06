@@ -994,7 +994,7 @@
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="http://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/Icons/w3c_home" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Upgrade Insecure Requests</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2015-10-01">1 October 2015</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2015-10-06">6 October 2015</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1525,7 +1525,7 @@ Location: https://example.com/
   inherits the setting from the context that created it in the following ways:</p>
     <ol>
      <li>
-       When executing the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/workers.html#set-up-a-worker-environment-settings-object">set up a worker environment settings object</a> algorithm, perform the following steps after the current step #4: 
+       When executing the <a data-link-type="dfn" href="http://www.w3.org/TR/workers/#set-up-a-worker-environment-settings-object">set up a worker environment settings object</a> algorithm, perform the following steps after the current step #4: 
       <ol start="5">
        <li>
          If <var>inherited responsible browsing context</var>’s <a data-link-type="dfn" href="#insecure-requests-policy">insecure
@@ -1538,8 +1538,6 @@ Location: https://example.com/
         </ol>
       </ol>
     </ol>
-    <p class="note" role="note">Note: We’re using the WHATWG HTML spec’s definition of Worker algorithms, as
-  they’re significantly more clear on these points than <a data-link-type="biblio" href="#biblio-workers">[WORKERS]</a>.</p>
     <h3 class="heading settled" data-level="3.4" id="reporting-upgrades"><span class="secno">3.4. </span><span class="content">Reporting Upgrades</span><a class="self-link" href="#reporting-upgrades"></a></h3>
     <p>Upgrading insecure requests MUST not interfere with an authors' ability to
   track down requests that would be insecure in a user agent that does not
@@ -1833,11 +1831,6 @@ Location: https://example.com/
      <li><a href="https://fetch.spec.whatwg.org/#concept-request-url">url</a>
     </ul>
    <li>
-    <a data-link-type="biblio" href="#biblio-html">[HTML]</a> defines the following terms:
-    <ul>
-     <li><a href="https://html.spec.whatwg.org/multipage/workers.html#set-up-a-worker-environment-settings-object">set up a worker environment settings object</a>
-    </ul>
-   <li>
     <a data-link-type="biblio" href="#biblio-html5">[html5]</a> defines the following terms:
     <ul>
      <li><a href="http://www.w3.org/TR/html5/browsers.html#browsing-context">browsing context</a>
@@ -1913,9 +1906,10 @@ Location: https://example.com/
      <li><a href="http://www.w3.org/TR/url/#concept-url-scheme">scheme</a>
     </ul>
    <li>
-    <a data-link-type="biblio" href="#biblio-workers">[workers]</a> defines the following terms:
+    <a data-link-type="biblio" href="#biblio-workers">[WORKERS]</a> defines the following terms:
     <ul>
      <li><a href="http://www.w3.org/TR/workers/#worker">Worker</a>
+     <li><a href="http://www.w3.org/TR/workers/#set-up-a-worker-environment-settings-object">set up a worker environment settings object</a>
     </ul>
   </ul>
   <h2 class="no-num heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
@@ -1929,10 +1923,10 @@ Location: https://example.com/
    <dd>Mike West; Adam Barth; Daniel Veditz. <a href="http://www.w3.org/TR/CSP2/">Content Security Policy Level 2</a>. 21 July 2015. CR. URL: <a href="http://www.w3.org/TR/CSP2/">http://www.w3.org/TR/CSP2/</a>
    <dt id="biblio-fetch"><a class="self-link" href="#biblio-fetch"></a>[FETCH]
    <dd>Anne van Kesteren. <a href="https://fetch.spec.whatwg.org/">Fetch Standard</a>. Living Standard. URL: <a href="https://fetch.spec.whatwg.org/">https://fetch.spec.whatwg.org/</a>
-   <dt id="biblio-html"><a class="self-link" href="#biblio-html"></a>[HTML]
-   <dd>Ian Hickson. <a href="https://html.spec.whatwg.org/multipage/">HTML Standard</a>. Living Standard. URL: <a href="https://html.spec.whatwg.org/multipage/">https://html.spec.whatwg.org/multipage/</a>
    <dt id="biblio-mix"><a class="self-link" href="#biblio-mix"></a>[MIX]
    <dd>Mike West. <a href="http://www.w3.org/TR/mixed-content/">Mixed Content</a>. 17 March 2015. CR. URL: <a href="http://www.w3.org/TR/mixed-content/">http://www.w3.org/TR/mixed-content/</a>
+   <dt id="biblio-workers"><a class="self-link" href="#biblio-workers"></a>[WORKERS]
+   <dd>Ian Hickson. <a href="http://www.w3.org/TR/workers/">Web Workers</a>. WD. URL: <a href="http://www.w3.org/TR/workers/">http://www.w3.org/TR/workers/</a>
    <dt id="biblio-dom"><a class="self-link" href="#biblio-dom"></a>[DOM]
    <dd>Anne van Kesteren; et al. <a href="http://www.w3.org/TR/dom/">W3C DOM4</a>. 18 June 2015. LCWD. URL: <a href="http://www.w3.org/TR/dom/">http://www.w3.org/TR/dom/</a>
    <dt id="biblio-html5"><a class="self-link" href="#biblio-html5"></a>[HTML5]
@@ -1957,8 +1951,6 @@ Location: https://example.com/
    <dd>J. Snell. <a href="https://tools.ietf.org/html/rfc7240">Prefer Header for HTTP</a>. June 2014. Proposed Standard. URL: <a href="https://tools.ietf.org/html/rfc7240">https://tools.ietf.org/html/rfc7240</a>
    <dt id="biblio-url"><a class="self-link" href="#biblio-url"></a>[URL]
    <dd>Anne van Kesteren; Sam Ruby. <a href="http://www.w3.org/TR/url-1/">URL</a>. 9 December 2014. WD. URL: <a href="http://www.w3.org/TR/url-1/">http://www.w3.org/TR/url-1/</a>
-   <dt id="biblio-workers"><a class="self-link" href="#biblio-workers"></a>[WORKERS]
-   <dd>Ian Hickson. <a href="http://www.w3.org/TR/workers/">Web Workers</a>. 1 May 2012. CR. URL: <a href="http://www.w3.org/TR/workers/">http://www.w3.org/TR/workers/</a>
   </dl>
   <h3 class="no-num heading settled" id="informative"><span class="content">Informative References</span><a class="self-link" href="#informative"></a></h3>
   <dl>

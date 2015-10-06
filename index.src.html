@@ -62,12 +62,6 @@ spec: HTML5; urlPrefix: http://www.w3.org/TR/html5/
       text: responsible document
       text: responsible browsing context
       text: relevant settings object for a script
-spec: HTML; urlPrefix: https://html.spec.whatwg.org/multipage/
-  urlPrefix: workers.html
-    type: dfn
-      text: set up a worker environment settings object
-    type: interface
-      text: SharedWorker
 spec: MIX; urlPrefix: https://w3c.github.io/webappsec/specs/mixedcontent/
   type: dfn
     text: embedding document
@@ -93,7 +87,10 @@ spec: URL; urlPrefix: http://www.w3.org/TR/url/
     text: port; for: URL; url: concept-url-port
     text: scheme; for: URL; url: concept-url-scheme
 spec: WORKERS; urlPrefix: http://www.w3.org/TR/workers/
+  type: dfn
+    text: set up a worker environment settings object
   type: interface
+    text: SharedWorker
     text: Worker
 spec: RFC5234; urlPrefix: https://tools.ietf.org/html/rfc5234
   type: dfn
@@ -152,6 +149,13 @@ spec: RFC7240; urlPrefix: https://tools.ietf.org/html/rfc7240
     "title": "Securing the Web",
     "href": "http://www.w3.org/2001/tag/doc/web-https",
     "status": "TAG Finding",
+    "publisher": "W3C"
+  },
+  "WORKERS": {
+    "authors": [ "Ian Hickson" ],
+    "title": "Web Workers",
+    "href": "http://www.w3.org/TR/workers/",
+    "status": "WD",
     "publisher": "W3C"
   }
 }
@@ -821,9 +825,6 @@ spec: RFC7240; urlPrefix: https://tools.ietf.org/html/rfc7240
       </ol>
     </li>
   </ol>
-
-  Note: We're using the WHATWG HTML spec's definition of Worker algorithms, as
-  they're significantly more clear on these points than [[WORKERS]].
 
   <h3 id="reporting-upgrades">Reporting Upgrades</h3>
 
