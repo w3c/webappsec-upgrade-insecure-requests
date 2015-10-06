@@ -18,7 +18,7 @@ Boilerplate: omit conformance, omit feedback-header
 !Participate: <a href="https://github.com/w3c/webappsec-upgrade-insecure-requests/issues/new">File an issue</a> (<a href="https://github.com/w3c/webappsec-upgrade-insecure-requests/issues">open issues</a>)
 </pre>
 <pre class="anchors">
-spec: CSP2; urlPrefix: https://www.w3.org/TR/CSP2/
+spec: CSP; urlPrefix: https://www.w3.org/TR/CSP/
   type: dfn
     text: content-security-policy
     text: content-security-policy-report-only
@@ -135,8 +135,8 @@ spec: RFC7240; urlPrefix: https://tools.ietf.org/html/rfc7240
   "CSP": {
     "authors": [ "Mike West", "Dan Veditz" ],
     "title": "Content Security Policy",
-    "href": "https://w3c.github.io/webappsec/specs/content-security-policy/",
-    "status": "WD",
+    "href": "https://www.w3.org/TR/CSP/",
+    "status": "CR",
     "publisher": "W3C"
   },
   "NYT-HTTPS": {
@@ -606,7 +606,7 @@ spec: RFC7240; urlPrefix: https://tools.ietf.org/html/rfc7240
   requests being rewritten at the top of the <a>Fetching</a> algorithm
   [[!FETCH]], as specified in [[#upgrade-request]]. It's important to note that
   the rewrite happens <em>before</em> either Mixed Content [[MIX]] or Content
-  Security Policy checks take effect [[CSP2]].
+  Security Policy checks take effect [[CSP]].
 
   This ordering means that upgraded requests <em>will not</em> be flagged as
   mixed content. Moreover, it means that
@@ -862,7 +862,7 @@ spec: RFC7240; urlPrefix: https://tools.ietf.org/html/rfc7240
     </ol>
   </div>
 
-  Note: This will be significantly clarified once [[CSP2]] is rewritten in terms
+  Note: This will be significantly clarified once [[CSP]] is rewritten in terms
   of [[FETCH]].
 </section>
 
