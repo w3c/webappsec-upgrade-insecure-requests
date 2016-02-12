@@ -1151,12 +1151,12 @@ spec: RFC7240; urlPrefix: https://tools.ietf.org/html/rfc7240
 <section>
   <h2 id="iana-considerations">IANA Considerations</h2>
 
+  <h3 id="iana-https">
+    Upgrade-Insecure-Requests Header
+  </h3>
+
   The permanent message header field registry should be updated
   with the following registration: [[!RFC3864]]
-
-  <h3 id="iana-https">
-    Upgrade-Insecure-Requests
-  </h3>
 
   <dl>
     <dt>Header field name</dt>
@@ -1174,6 +1174,22 @@ spec: RFC7240; urlPrefix: https://tools.ietf.org/html/rfc7240
     <dt>Specification document</dt>
     <dd>This specification (See [[#preference]])</dd>
   </dl>
+
+  <h3 id="iana-directive">
+    Upgrade-Insecure-Requests Directive
+  </h3>
+
+  The Content Security Policy Directive registry should be updated with the
+  following registration: [[!RFC7762]]
+
+  <dl>
+    <dt>Directive name</dt>
+    <dd>Upgrade-Insecure-Requests</dd>
+
+    <dt>Reference</dt>
+    <dd>This specification (See [[#delivery]])</dd>
+  </dl>
+</section>
 
 <section>
   <h2 id="acknowledgements">Acknowledgements</h2>

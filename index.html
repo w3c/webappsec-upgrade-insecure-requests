@@ -1347,7 +1347,8 @@ secure transport before fetching them.</p>
     <li>
      <a href="#iana-considerations"><span class="secno">9</span> <span class="content">IANA Considerations</span></a>
      <ol class="toc">
-      <li><a href="#iana-https"><span class="secno">9.1</span> <span class="content"> Upgrade-Insecure-Requests </span></a>
+      <li><a href="#iana-https"><span class="secno">9.1</span> <span class="content"> Upgrade-Insecure-Requests Header </span></a>
+      <li><a href="#iana-directive"><span class="secno">9.2</span> <span class="content"> Upgrade-Insecure-Requests Directive </span></a>
      </ol>
     <li><a href="#acknowledgements"><span class="secno">10</span> <span class="content">Acknowledgements</span></a>
     <li>
@@ -1965,9 +1966,9 @@ Location: https://example.com/
    </section>
    <section>
     <h2 class="heading settled" data-level="9" id="iana-considerations"><span class="secno">9. </span><span class="content">IANA Considerations</span><a class="self-link" href="#iana-considerations"></a></h2>
+    <h3 class="heading settled" data-level="9.1" id="iana-https"><span class="secno">9.1. </span><span class="content"> Upgrade-Insecure-Requests Header </span><a class="self-link" href="#iana-https"></a></h3>
     <p>The permanent message header field registry should be updated
   with the following registration: <a data-link-type="biblio" href="#biblio-rfc3864">[RFC3864]</a></p>
-    <h3 class="heading settled" data-level="9.1" id="iana-https"><span class="secno">9.1. </span><span class="content"> Upgrade-Insecure-Requests </span><a class="self-link" href="#iana-https"></a></h3>
     <dl>
      <dt>Header field name
      <dd>Upgrade-Insecure-Requests
@@ -1980,12 +1981,21 @@ Location: https://example.com/
      <dt>Specification document
      <dd>This specification (See <a href="#preference">§3.2.1 The Upgrade-Insecure-Requests HTTP Request Header Field</a>)
     </dl>
-    <section>
-     <h2 class="heading settled" data-level="10" id="acknowledgements"><span class="secno">10. </span><span class="content">Acknowledgements</span><a class="self-link" href="#acknowledgements"></a></h2>
-     <p>Anne van Kesteren helped ensure that the initial draft of this document was
+    <h3 class="heading settled" data-level="9.2" id="iana-directive"><span class="secno">9.2. </span><span class="content"> Upgrade-Insecure-Requests Directive </span><a class="self-link" href="#iana-directive"></a></h3>
+    <p>The Content Security Policy Directive registry should be updated with the
+  following registration: <a data-link-type="biblio" href="#biblio-rfc7762">[RFC7762]</a></p>
+    <dl>
+     <dt>Directive name
+     <dd>Upgrade-Insecure-Requests
+     <dt>Reference
+     <dd>This specification (See <a href="#delivery">§3.1 The upgrade-insecure-requests Content Security Policy directive</a>)
+    </dl>
+   </section>
+   <section>
+    <h2 class="heading settled" data-level="10" id="acknowledgements"><span class="secno">10. </span><span class="content">Acknowledgements</span><a class="self-link" href="#acknowledgements"></a></h2>
+    <p>Anne van Kesteren helped ensure that the initial draft of this document was
   sane. Peter Eckersley and Daniel Kahn Gillmor clarified the problem space, and
   helped point out the impact.</p>
-    </section>
    </section>
   </main>
   <h2 class="no-ref no-num heading settled" id="conformance"><span class="content">Conformance</span><a class="self-link" href="#conformance"></a></h2>
@@ -2191,6 +2201,8 @@ Location: https://example.com/
    <dd>R. Fielding, Ed.; M. Nottingham, Ed.; J. Reschke, Ed.. <a href="https://tools.ietf.org/html/rfc7234">Hypertext Transfer Protocol (HTTP/1.1): Caching</a>. June 2014. Proposed Standard. URL: <a href="https://tools.ietf.org/html/rfc7234">https://tools.ietf.org/html/rfc7234</a>
    <dt id="biblio-rfc7240"><a class="self-link" href="#biblio-rfc7240"></a>[RFC7240]
    <dd>J. Snell. <a href="https://tools.ietf.org/html/rfc7240">Prefer Header for HTTP</a>. June 2014. Proposed Standard. URL: <a href="https://tools.ietf.org/html/rfc7240">https://tools.ietf.org/html/rfc7240</a>
+   <dt id="biblio-rfc7762"><a class="self-link" href="#biblio-rfc7762"></a>[RFC7762]
+   <dd>M. West. <a href="https://tools.ietf.org/html/rfc7762">Initial Assignment for the Content Security Policy Directives Registry</a>. January 2016. Informational. URL: <a href="https://tools.ietf.org/html/rfc7762">https://tools.ietf.org/html/rfc7762</a>
    <dt id="biblio-url"><a class="self-link" href="#biblio-url"></a>[URL]
    <dd>Anne van Kesteren; Sam Ruby. <a href="http://www.w3.org/TR/url-1/">URL</a>. 9 December 2014. WD. URL: <a href="http://www.w3.org/TR/url-1/">http://www.w3.org/TR/url-1/</a>
   </dl>
