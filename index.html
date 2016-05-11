@@ -10,7 +10,7 @@
  *
  * Indices
  *   - .toc for the Table of Contents (<ol class="toc">)
- *     -> <span class="secno"> for the section numbers
+ *     + <span class="secno"> for the section numbers
  *   - #toc for the Table of Contents (<nav id="toc">)
  *   - ul.index for Indices (<a href="#ref">term</a><span>, in §N.M</span>)
  *   - table.index for Index Tables (e.g. for properties or elements)
@@ -63,8 +63,7 @@
  *     Note that this styling basically doesn't help at all when printing,
  *     since A4 paper isn't much wider than the max-width here.
  *     It's better to design things to fit into a narrower measure if possible.
- *   - back-to-top link:
- *     <p role=navigation id="back-to-top"><a href="#toc"><abbr title="Back to Top">&uarr;</abbr>
+ *   - js-added ToC jump links (see fixup.js)
  *
  ******************************************************************************/
 
@@ -114,11 +113,36 @@
 
 	div.head h2 { margin-bottom: 1.5em;}
 
-	.head > :first-child {
+/** W3C Logo ******************************************************************/
+
+	.head .logo {
 		float: right;
-		margin: 0;
+		margin: 0.4rem 0 0.2rem .4rem;
 	}
 
+	.head img[src*="logos/W3C"] {
+		display: block;
+		border: solid #1a5e9a;
+		border-width: .65rem .7rem .6rem;
+		border-radius: .4rem;
+		background: #1a5e9a;
+		color: white;
+		font-weight: bold;
+	}
+
+	.head a:hover > img[src*="logos/W3C"],
+	.head a:focus > img[src*="logos/W3C"] {
+		opacity: .8;
+	}
+
+	.head a:active > img[src*="logos/W3C"] {
+		background: #c00;
+		border-color: #c00;
+	}
+
+	/* see also additional rules in Link Styling section */
+
+/** Copyright *****************************************************************/
 
 	p.copyright,
 	p.copyright small { font-size: small }
@@ -126,48 +150,60 @@
 /** Back to Top / ToC Toggle **************************************************/
 
 	@media print {
-		#back-to-top,
-		.toc-toggle {
+		#toc-nav {
 			display: none;
 		}
 	}
 	@media not print {
-		#back-to-top,
-		body > #toc-toggle {
+		#toc-nav {
 			position: fixed;
 			z-index: 2;
 			bottom: 0; left: 0;
 			margin: 0;
-			width: 26px;
-			text-align: center;
-			border-top-right-radius: 26px;
+			min-width: 1.33em;
+			border-top-right-radius: 2rem;
 			box-shadow: 0 0 2px;
-			font: 1em monospace;
-			font: 1rem monospace;
+			font-size: 1.5em;
 			color: black;
 		}
-		#back-to-top a,
-		body > #toc-toggle {
+		#toc-nav > a {
 			display: block;
-			width: 22px;
-			height: 22px;
-			padding: 4px 4px 0 0;
+			white-space: nowrap;
+
+			height: 1.33em;
+			padding: .1em 0.3em;
 			margin: 0;
-			border: none;
-			border-top-right-radius: 26px;
-		}
-		#back-to-top :first-child {
-			display: block;
-			padding-bottom: 22px;
-			margin-bottom: -22px;
-		}
-		#back-to-top > a {
+
 			background: white;
 			box-shadow: 0 0 2px;
+			border: none;
+			border-top-right-radius: 1.33em;
+			background: white;
 		}
-		#back-to-top > a:hover,
-		#back-to-top > a:focus {
+		#toc-nav > #toc-jump {
+			padding-bottom: 2em;
+			margin-bottom: -1.9em;
+		}
+
+		#toc-nav > a:hover,
+		#toc-nav > a:focus {
 			background: #f8f8f8;
+		}
+		#toc-nav > a:not(:hover):not(:focus) {
+			color: #707070;
+		}
+
+		/* statusbar gets in the way on keyboard focus; remove once browsers fix */
+		#toc-nav > a[href="#toc"]:not(:hover):focus:last-child {
+			padding-bottom: 1.5rem;
+		}
+
+		#toc-nav:not(:hover) > a:not(:focus) > span + span {
+			/* Ideally this uses :focus-within on #toc-nav */
+			display: none;
+		}
+		#toc-nav > a > span + span {
+			padding-right: 0.2em;
 		}
 
 		#toc-toggle-inline {
@@ -186,14 +222,8 @@
 			left: -1px;
 		}
 
-		.toc-toggle:active,
-		#back-to-top :active {
+		#toc-nav :active {
 			color: #C00;
-		}
-
-		#back-to-top abbr {
-			border: none;
-			text-decoration: none;
 		}
 	}
 
@@ -206,6 +236,8 @@
 			top: 0; bottom: 0;
 			left: 0;
 			width: 23.5em;
+			max-width: 80%;
+			max-width: calc(100% - 2em - 26px);
 			overflow: auto;
 			padding: 0 1em;
 			padding-left: 42px;
@@ -224,8 +256,18 @@
 			color: gray;
 			color: hsla(203,20%,40%,.7);
 		}
-		body.toc-sidebar #back-to-top :first-child {
-			display: none;
+		body.toc-sidebar #toc-jump:not(:focus) {
+			width: 0;
+			height: 0;
+			padding: 0;
+			position: absolute;
+			overflow: hidden;
+		}
+	}
+	/* Hide main scroller when only the ToC is visible anyway */
+	@media screen and (max-width: 28em) {
+		body.toc-sidebar {
+			overflow: hidden;
 		}
 	}
 
@@ -260,8 +302,12 @@
 		}
 		/* See also Overflow section at the bottom */
 
-		body:not(.toc-inline) #back-to-top :first-child {
-			display: none;
+		body:not(.toc-inline) #toc-jump:not(:focus) {
+			width: 0;
+			height: 0;
+			padding: 0;
+			position: absolute;
+			overflow: hidden;
 		}
 	}
 	@media screen and (min-width: 90em) {
@@ -282,6 +328,7 @@
 		font: 100% sans-serif;   /* Reset all font styling to clear out UA styles */
 		font-family: inherit;    /* Inherit the font family. */
 		line-height: 1.2;        /* Keep wrapped headings compact */
+		hyphens: manual;         /* Hyphenated headings look weird */
 	}
 
 	h2, h3, h4, h5, h6 {
@@ -353,15 +400,11 @@
 	}
 
 	dl dd {
-		margin: 0 0 1em 2em;
+		margin: 0 0 .5em 2em;
 	}
 
-	.head dd + dt {
-		margin-top: .5em;
-	}
-
-	.head dd { /* undo for header */
-		margin-bottom: 0;
+	.head dd + dd { /* compact for header */
+		margin-top: -.5em;
 	}
 
 	/* Style for algorithms */
@@ -489,9 +532,11 @@
 	}
 
 	/* Backout above styling for W3C logo */
-	.head > p:first-child > a {
+	.head .logo,
+	.head .logo a {
 		border: none;
 		text-decoration: none;
+		background: transparent;
 	}
 
 /******************************************************************************/
@@ -740,6 +785,7 @@
 		font-style: italic;
 		font-weight: normal;
 		padding-left: 1em;
+		width: 3em;
 	}
 
 	/* For when values are extra-complex and need formatting for readability */
@@ -782,8 +828,8 @@
 	table.index {
 		margin: 1em auto;
 		border-collapse: collapse;
-		width: 100%;
 		border: hidden;
+		width: 100%;
 	}
 	table.data caption,
 	table.index caption {
@@ -804,11 +850,6 @@
 		border: 0;
 	}
 
-	table.data  thead th[scope="row"],
-	table.index thead th[scope="row"] {
-		text-align: right;
-	}
-
 	table.data  thead,
 	table.index thead,
 	table.data  tbody,
@@ -823,7 +864,6 @@
 
 	table.data  tbody th:first-child,
 	table.index tbody th:first-child  {
-		text-align: right;
 		border-right: 2px solid;
 		border-top: 1px solid silver;
 		padding-right: 1em;
@@ -852,10 +892,7 @@
 
 
 /*
-	a.property {
-		font-weight: bold;
-		color: hsla(203, 90%, 30%,.8);
-	}
+Alternate table alignment rules
 
 	table.data,
 	table.index {
@@ -871,6 +908,8 @@
 	table.index tbody th:first-child  {
 		text-align: right;
 	}
+
+Possible extra rowspan handling
 
 	table.data  tbody th[rowspan]:not([rowspan='1']),
 	table.index tbody th[rowspan]:not([rowspan='1']),
@@ -895,24 +934,9 @@
 
 /** Table of Contents *********************************************************/
 
-	.toc, .toc ol, .toc ul, .toc li {
-		list-style: none; /* Numbers must be inlined into source */
-		/* because generated content isn't search/selectable and markers can't do multilevel yet */
-		margin:  0;
-		padding: 0;
-		line-height: 1.2rem; /* consistent spacing */
-	}
-
-	/* ToC not indented until third level, but font style & margins show hierarchy */
-	.toc > li             { margin: 1.2em 0;   font-weight: bold;   }
-	.toc > li li          { margin: 0;         font-weight: normal; }
-	.toc > li li li       { margin-left:  1em; font-style:  italic; }
-	.toc > li li li li    { margin-left:  1em; font-style:  normal; }
-	.toc > li li li li li { margin-left: 1rem; font-style:  italic; font-size: 85%; }
-
 	.toc a {
 		/* More spacing; use padding to make it part of the click target. */
-		padding-top: 0.1em;
+		padding-top: 0.1rem;
 		/* Larger, more consistently-sized click target */
 		display: block;
 		/* Reverse color scheme */
@@ -927,31 +951,68 @@
 		border-bottom-color: transparent;
 	}
 
-	/* Section numbers in a column of their own */
-	:not(li) > .toc {
-		margin-left: 4em;
+	.toc, .toc ol, .toc ul, .toc li {
+		list-style: none; /* Numbers must be inlined into source */
+		/* because generated content isn't search/selectable and markers can't do multilevel yet */
+		margin:  0;
+		padding: 0;
+		line-height: 1.1rem; /* consistent spacing */
 	}
 
+	/* ToC not indented until third level, but font style & margins show hierarchy */
+	.toc > li             { font-weight: bold;   }
+	.toc > li li          { font-weight: normal; }
+	.toc > li li li       { font-style:  italic; }
+	.toc > li li li li    { font-style:  normal; }
+	.toc > li li li li li { font-style:  italic;
+	                        font-size:   85%;    }
+
+	.toc > li             { margin: 1.5rem 0;    }
+	.toc > li li          { margin: 0.3rem 0;    }
+	.toc > li li li       { margin-left: 2rem;   }
+
+	/* Section numbers in a column of their own */
 	.toc .secno {
 		float: left;
-		width: 4em;
-		margin-left: -4em;
+		width: 4rem;
 		white-space: nowrap;
-	}
-
-	.toc > li li li .secno {
-		margin-left: -5em;
 	}
 	.toc > li li li li .secno {
 		font-size: 85%;
-		margin-left: -7.06em;
-		margin-left: -6rem;
 	}
 	.toc > li li li li li .secno {
-		margin-left: -8.24em;
-		margin-left: -7rem;
 		font-size: 100%;
 	}
+
+	:not(li) > .toc              { margin-left:  5rem; }
+	.toc .secno                  { margin-left: -5rem; }
+	.toc > li li li .secno       { margin-left: -7rem; }
+	.toc > li li li li .secno    { margin-left: -9rem; }
+	.toc > li li li li li .secno { margin-left: -11rem; }
+
+	/* Tighten up indentation in narrow ToCs */
+	@media (max-width: 30em) {
+		:not(li) > .toc              { margin-left:  4rem; }
+		.toc .secno                  { margin-left: -4rem; }
+		.toc > li li li              { margin-left:  1rem; }
+		.toc > li li li .secno       { margin-left: -5rem; }
+		.toc > li li li li .secno    { margin-left: -6rem; }
+		.toc > li li li li li .secno { margin-left: -7rem; }
+	}
+	@media screen and (min-width: 78em) {
+		body:not(.toc-inline) :not(li) > .toc              { margin-left:  4rem; }
+		body:not(.toc-inline) .toc .secno                  { margin-left: -4rem; }
+		body:not(.toc-inline) .toc > li li li              { margin-left:  1rem; }
+		body:not(.toc-inline) .toc > li li li .secno       { margin-left: -5rem; }
+		body:not(.toc-inline) .toc > li li li li .secno    { margin-left: -6rem; }
+		body:not(.toc-inline) .toc > li li li li li .secno { margin-left: -7rem; }
+	}
+	body.toc-sidebar #toc :not(li) > .toc              { margin-left:  4rem; }
+	body.toc-sidebar #toc .toc .secno                  { margin-left: -4rem; }
+	body.toc-sidebar #toc .toc > li li li              { margin-left:  1rem; }
+	body.toc-sidebar #toc .toc > li li li .secno       { margin-left: -5rem; }
+	body.toc-sidebar #toc .toc > li li li li .secno    { margin-left: -6rem; }
+	body.toc-sidebar #toc .toc > li li li li li .secno { margin-left: -7rem; }
 
 	.toc li {
 		clear: both;
@@ -961,7 +1022,7 @@
 /** Index *********************************************************************/
 
 	/* Index Lists: Layout */
-	ul.index       { margin-left: 0; columns: 15em; -webkit-columns: 15em; -moz-columns: 15em; text-indent: 1em hanging; }
+	ul.index       { margin-left: 0; columns: 15em; text-indent: 1em hanging; }
 	ul.index li    { margin-left: 0; list-style: none; break-inside: avoid; }
 	ul.index li li { margin-left: 1em }
 	ul.index dl    { margin-top: 0; }
@@ -1043,6 +1104,12 @@
 		margin-left: auto;
 		margin-right: auto;
 	}
+	.overlarge > table {
+		/* limit preferred width of table */
+		max-width: 50em;
+		margin-left: auto;
+		margin-right: auto;
+	}
 
 	@media (min-width: 55em) {
 		.overlarge {
@@ -1081,169 +1148,187 @@
 			*/
 		}
 	}
-
-/******************************************************************************/
-/*                                  Bikeshed                                  */
-/******************************************************************************/
-
-	/* Style for paragraphs I know are in MD-genned lists */
-	/* This is a weird hack for me not yet following the commonmark spec
-	   regarding paragraph and lists. */
-	[data-md] > :first-child {
-		margin-top: 0;
-	}
-	[data-md] > :last-child {
-		margin-bottom: 0;
-	}
-
-/** Inline CSS fragments ******************************************************/
-
-	.css.css, .property.property, .descriptor.descriptor {
-		color: #005a9c;
-		font-size: inherit;
-		font-family: inherit;
-	}
-	.css::before, .property::before, .descriptor::before {
-		content: "‘";
-	}
-	.css::after, .property::after, .descriptor::after {
-		content: "’";
-	}
-	.property, .descriptor {
-		/* Don't wrap property and descriptor names */
-		white-space: nowrap;
-	}
-	.type { /* CSS value <type> */
-		font-style: italic;
-	}
-	pre .property::before, pre .property::after {
-		content: "";
-	}
-
-/** Autolinks produced using Bikeshed *****************************************/
-
-	[data-link-type="property"]::before,
-	[data-link-type="propdesc"]::before,
-	[data-link-type="descriptor"]::before,
-	[data-link-type="value"]::before,
-	[data-link-type="function"]::before,
-	[data-link-type="at-rule"]::before,
-	[data-link-type="selector"]::before,
-	[data-link-type="maybe"]::before {
-		content: "‘";
-	}
-	[data-link-type="property"]::after,
-	[data-link-type="propdesc"]::after,
-	[data-link-type="descriptor"]::after,
-	[data-link-type="value"]::after,
-	[data-link-type="function"]::after,
-	[data-link-type="at-rule"]::after,
-	[data-link-type="selector"]::after,
-	[data-link-type="maybe"]::after {
-		content: "’";
-	}
-
-	[data-link-type].production::before,
-	[data-link-type].production::after,
-	.prod [data-link-type]::before,
-	.prod [data-link-type]::after {
-		content: "";
-	}
-
-	[data-link-type=element],
-	[data-link-type=element-attr] {
-		font-family: Menlo, Consolas, "DejaVu Sans Mono", monospace;
-		font-size: .9em;
-	}
-	[data-link-type=element]::before { content: "<" }
-	[data-link-type=element]::after  { content: ">" }
-
-	[data-link-type=biblio] {
-		white-space: pre;
-	}
-
-/** Self-Links ****************************************************************/
-/* Auto-generated links from an element to its own anchor, for usability */
-
-	.heading, .issue, .note, .example, li, dt {
-		position: relative;
-	}
-	a.self-link {
-		position: absolute;
-		top: 0;
-		left: -2.5em;
-		width: 2em;
-		height: 2em;
-		text-align: center;
-		border: none;
-		transition: opacity .2s;
-		opacity: .5;
-	}
-	a.self-link:hover {
-		opacity: 1;
-	}
-	.heading > a.self-link {
-		font-size: 83%;
-	}
-	li > a.self-link {
-		left: -3.5em;
-	}
-	dfn > a.self-link {
-		top: auto;
-		left: auto;
-		opacity: 0;
-		width: 1.5em;
-		height: 1.5em;
-		background: gray;
-		color: white;
-		font-style: normal;
-		transition: opacity .2s, background-color .2s, color .2s;
-	}
-	dfn:hover > a.self-link {
-		opacity: 1;
-	}
-	dfn > a.self-link:hover {
-		color: black;
-	}
-
-	a.self-link::before            { content: "¶"; }
-	.heading > a.self-link::before { content: "§"; }
-	dfn > a.self-link::before      { content: "#"; }
-
-/** Counters ******************************************************************/
-/* Adds the auto-genned issue/example counters,
-   until Bikeshed fills in manual ones. */
-	.issue:not(.no-marker)::before {
-		content: "Issue " counter(issue);
-	}
-
-	.example:not(.no-marker)::before {
-		content: "Example";
-		content: "Example " counter(example);
-	}
-	.invalid.example:not(.no-marker)::before,
-	.illegal.example:not(.no-marker)::before {
-		content: "Invalid Example";
-		content: "Invalid Example" counter(example);
-	}
-
-
-
-/********************************************
- Remember to remove the logo section when copypasting freshly.
- */
 </style>
   <meta content="Bikeshed 1.0.0" name="generator">
+<style>/* style-md-lists */
+
+            /* This is a weird hack for me not yet following the commonmark spec
+               regarding paragraph and lists. */
+            [data-md] > :first-child {
+                margin-top: 0;
+            }
+            [data-md] > :last-child {
+                margin-bottom: 0;
+            }</style>
+<style>/* style-counters */
+
+            .issue:not(.no-marker)::before {
+                content: "Issue " counter(issue);
+            }
+
+            .example:not(.no-marker)::before {
+                content: "Example";
+                content: "Example " counter(example);
+            }
+            .invalid.example:not(.no-marker)::before,
+            .illegal.example:not(.no-marker)::before {
+                content: "Invalid Example";
+                content: "Invalid Example" counter(example);
+            }</style>
+<style>/* style-dfn-panel */
+
+        .dfn-panel {
+            display: inline-block;
+            position: absolute;
+            z-index: 35;
+            height: auto;
+            width: -webkit-fit-content;
+            max-width: 300px;
+            max-height: 500px;
+            overflow: auto;
+            padding: 0.5em 0.75em;
+            font: small Helvetica Neue, sans-serif, Droid Sans Fallback;
+            background: #DDDDDD;
+            color: black;
+            border: outset 0.2em;
+        }
+        .dfn-panel:not(.on) { display: none; }
+        .dfn-panel * { margin: 0; padding: 0; text-indent: 0; }
+        .dfn-panel > b { display: block; }
+        .dfn-panel a { color: black; }
+        .dfn-panel a:not(:hover) { text-decoration: none !important; border-bottom: none !important; }
+        .dfn-panel > b + b { margin-top: 0.25em; }
+        .dfn-panel > span { display: list-item; list-style: inside; }
+        .dfn-panel.activated {
+            display: inline-block;
+            position: fixed;
+            left: .5em;
+            bottom: .5em;
+            margin: 0 auto;
+            max-width: calc(100vw - 1.5em - .4em - .5em);
+            max-height: 30vh;
+        }
+
+        .dfn-paneled { cursor: pointer; }
+        </style>
+<style>/* style-selflinks */
+
+            .heading, .issue, .note, .example, li, dt {
+                position: relative;
+            }
+            a.self-link {
+                position: absolute;
+                top: 0;
+                left: calc(-1 * (3.5rem - 26px));
+                width: calc(3.5rem - 26px);
+                height: 2em;
+                text-align: center;
+                border: none;
+                transition: opacity .2s;
+                opacity: .5;
+            }
+            a.self-link:hover {
+                opacity: 1;
+            }
+            .heading > a.self-link {
+                font-size: 83%;
+            }
+            li > a.self-link {
+                left: calc(-1 * (3.5rem - 26px) - 2em);
+            }
+            dfn > a.self-link {
+                top: auto;
+                left: auto;
+                opacity: 0;
+                width: 1.5em;
+                height: 1.5em;
+                background: gray;
+                color: white;
+                font-style: normal;
+                transition: opacity .2s, background-color .2s, color .2s;
+            }
+            dfn:hover > a.self-link {
+                opacity: 1;
+            }
+            dfn > a.self-link:hover {
+                color: black;
+            }
+
+            a.self-link::before            { content: "¶"; }
+            .heading > a.self-link::before { content: "§"; }
+            dfn > a.self-link::before      { content: "#"; }</style>
+<style>/* style-autolinks */
+
+            .css.css, .property.property, .descriptor.descriptor {
+                color: #005a9c;
+                font-size: inherit;
+                font-family: inherit;
+            }
+            .css::before, .property::before, .descriptor::before {
+                content: "‘";
+            }
+            .css::after, .property::after, .descriptor::after {
+                content: "’";
+            }
+            .property, .descriptor {
+                /* Don't wrap property and descriptor names */
+                white-space: nowrap;
+            }
+            .type { /* CSS value <type> */
+                font-style: italic;
+            }
+            pre .property::before, pre .property::after {
+                content: "";
+            }
+            [data-link-type="property"]::before,
+            [data-link-type="propdesc"]::before,
+            [data-link-type="descriptor"]::before,
+            [data-link-type="value"]::before,
+            [data-link-type="function"]::before,
+            [data-link-type="at-rule"]::before,
+            [data-link-type="selector"]::before,
+            [data-link-type="maybe"]::before {
+                content: "‘";
+            }
+            [data-link-type="property"]::after,
+            [data-link-type="propdesc"]::after,
+            [data-link-type="descriptor"]::after,
+            [data-link-type="value"]::after,
+            [data-link-type="function"]::after,
+            [data-link-type="at-rule"]::after,
+            [data-link-type="selector"]::after,
+            [data-link-type="maybe"]::after {
+                content: "’";
+            }
+
+            [data-link-type].production::before,
+            [data-link-type].production::after,
+            .prod [data-link-type]::before,
+            .prod [data-link-type]::after {
+                content: "";
+            }
+
+            [data-link-type=element],
+            [data-link-type=element-attr] {
+                font-family: Menlo, Consolas, "DejaVu Sans Mono", monospace;
+                font-size: .9em;
+            }
+            [data-link-type=element]::before { content: "<" }
+            [data-link-type=element]::after  { content: ">" }
+
+            [data-link-type=biblio] {
+                white-space: pre;
+            }</style>
  <body class="h-entry">
   <div class="head">
-   <p data-fill-with="logo"><a class="logo" href="http://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/Icons/w3c_home" width="72"> </a> </p>
+   <p data-fill-with="logo"><a class="logo" href="http://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Upgrade Insecure Requests</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2016-02-12">12 February 2016</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2016-05-11">11 May 2016</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
      <dd><a class="u-url" href="https://w3c.github.io/webappsec-upgrade-insecure-requests/">https://w3c.github.io/webappsec-upgrade-insecure-requests/</a>
-     <dt>Latest version:
+     <dt>Latest published version:
      <dd><a href="http://www.w3.org/TR/upgrade-insecure-requests/">http://www.w3.org/TR/upgrade-insecure-requests/</a>
      <dt>Previous Versions:
      <dd><a href="http://www.w3.org/TR/2015/WD-upgrade-insecure-requests-20150226/" rel="previous">http://www.w3.org/TR/2015/WD-upgrade-insecure-requests-20150226/</a>
@@ -1389,7 +1474,7 @@ secure transport before fetching them.</p>
   user agent that they intend a site to load only secure resources, and that
   insecure URLs ought to be treated as though they had been replaced with equivalent secure
   URLs.</p>
-    <p>This document defines a new Content Security Policy directive, <code><a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a></code>, through which authors can make
+    <p>This document defines a new Content Security Policy directive, <code><a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests-1">upgrade-insecure-requests</a></code>, through which authors can make
   this assertion.
   Note: Delivering the policy as a header allows an administrator to easily
   opt a set of pages into the upgrade mechanism without touching their source
@@ -1437,7 +1522,7 @@ secure transport before fetching them.</p>
     it.</p>
      <p>As a stopgap measure, Megacorp injects the following header field into every
     HTML response that goes out from their servers:</p>
-<pre><a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#content-security-policy">Content-Security-Policy</a>: <a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a>
+<pre><a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#content-security-policy">Content-Security-Policy</a>: <a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests-2">upgrade-insecure-requests</a>
 </pre>
      <p>This automatically upgrades all insecure resource requests from their pages
     to secure variants, allowing a user agent to treat the following HTML code:</p>
@@ -1457,9 +1542,9 @@ secure transport before fetching them.</p>
     <div class="example" id="example-1b5868ed">
      <a class="self-link" href="#example-1b5868ed"></a> Megacorp, Inc. isn’t quite ready to deliver Strict Transport Security
     headers <a data-link-type="biblio" href="#biblio-rfc6797">[RFC6797]</a>, but does want to keep users on secure pages when
-    possible. Happily, this comes for free with <code><a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a></code>. That is, they’re already
+    possible. Happily, this comes for free with <code><a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests-3">upgrade-insecure-requests</a></code>. That is, they’re already
     delivering pages with the following header: 
-<pre><a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#content-security-policy">Content-Security-Policy</a>: <a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a>
+<pre><a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#content-security-policy">Content-Security-Policy</a>: <a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests-4">upgrade-insecure-requests</a>
 </pre>
      <p>This allows user agents to treat the following HTML code:</p>
 <pre>&lt;a href="http://example.com/">Home&lt;/a>
@@ -1475,7 +1560,7 @@ secure transport before fetching them.</p>
     </div>
     <h4 class="heading settled" data-level="1.2.3" id="example-failed"><span class="secno">1.2.3. </span><span class="content">Failed Upgrade</span><a class="self-link" href="#example-failed"></a></h4>
     <div class="example" id="example-2437e019">
-     <a class="self-link" href="#example-2437e019"></a> Tinycorp, Inc. enabled <code><a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a></code> a bit
+     <a class="self-link" href="#example-2437e019"></a> Tinycorp, Inc. enabled <code><a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests-5">upgrade-insecure-requests</a></code> a bit
     earlier than they should have, as they don’t actually support HTTPS on <code>http://cdn.example.com/</code>. Given the following code: 
 <pre>&lt;img src="http://cdn.example.com/image.png">
 </pre>
@@ -1486,10 +1571,10 @@ secure transport before fetching them.</p>
     the request had been intentionally made, and the request fails.</p>
     </div>
     <h3 class="heading settled" data-level="1.3" id="recommendations"><span class="secno">1.3. </span><span class="content">Recommendations</span><a class="self-link" href="#recommendations"></a></h3>
-    <p>We recommend that authors who wish to ensure that user agents which support <a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a> are as secure as possible do the following:</p>
+    <p>We recommend that authors who wish to ensure that user agents which support <a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests-6">upgrade-insecure-requests</a> are as secure as possible do the following:</p>
     <ol>
      <li>
-       Redirect <a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#a-priori-insecure-url"><i lang="la">a priori</i> insecure</a>, <a data-link-type="dfn" href="#safely-upgradable-requests">safely upgradable
+       Redirect <a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#a-priori-insecure-url"><i lang="la">a priori</i> insecure</a>, <a data-link-type="dfn" href="#safely-upgradable-requests" id="ref-for-safely-upgradable-requests-1">safely upgradable
       requests</a> from HTTP to HTTPS by responding with a <code>Location</code> header and a <code>307</code> status code. 
       <div class="example" id="example-482fe272">
        <a class="self-link" href="#example-482fe272"></a> In Nginx, this kind of redirection might look like this: 
@@ -1504,14 +1589,14 @@ secure transport before fetching them.</p>
         be significantly more complex.</p>
       </div>
      <li>
-       Respond to <a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#potentially-secure-origin">potentially secure</a> <a data-link-type="dfn" href="#safely-upgradable-requests">safely upgradable requests</a> with a <code><a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a></code> directive if
+       Respond to <a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#potentially-secure-origin">potentially secure</a> <a data-link-type="dfn" href="#safely-upgradable-requests" id="ref-for-safely-upgradable-requests-2">safely upgradable requests</a> with a <code><a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests-7">upgrade-insecure-requests</a></code> directive if
       necessary for the resource being requested. 
       <div class="example" id="example-16f56fd1">
        <a class="self-link" href="#example-16f56fd1"></a> In Nginx, adding this directive might look like this: 
 <pre>server {
   ...
 
-  add_header <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#content-security-policy">Content-Security-Policy</a> <a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a>;
+  add_header <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#content-security-policy">Content-Security-Policy</a> <a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests-8">upgrade-insecure-requests</a>;
 
   ...
 }
@@ -1520,7 +1605,7 @@ secure transport before fetching them.</p>
         be significantly more complex.</p>
       </div>
      <li>
-       If the origin is <a data-link-type="dfn" href="#hsts-safe-origin">HSTS-safe</a>, then protect
+       If the origin is <a data-link-type="dfn" href="#hsts-safe-origin" id="ref-for-hsts-safe-origin-1">HSTS-safe</a>, then protect
       against SSL-stripping man-in-the-middle attacks by sending a <code><a data-link-type="dfn" href="https://tools.ietf.org/html/rfc6797#section-6.1">Strict-Transport-Security</a></code> header with the <code>preload</code> directive, and ensure that insecure content is
       never loaded by enabling Mixed Content’s <a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#strict-mode">strict mode</a>. 
       <div class="example" id="example-13433fc6">
@@ -1543,8 +1628,8 @@ secure transport before fetching them.</p>
       <p>Additionally, work with user agent vendors to add the origin to
       HSTS Preload Lists (for example, by submitting the origin to <a href="https://hstspreload.appspot.com/">hstspreload.appspot.com</a>).</p>
      <li>
-       If the origin is <a data-link-type="dfn" href="#conditionally-hsts-safe-origin">conditionally HSTS-safe</a>, then opt-into HSTS only
-      in response to <a data-link-type="dfn" href="#safely-upgradable-requests">safely upgradable requests</a>. 
+       If the origin is <a data-link-type="dfn" href="#conditionally-hsts-safe-origin" id="ref-for-conditionally-hsts-safe-origin-1">conditionally HSTS-safe</a>, then opt-into HSTS only
+      in response to <a data-link-type="dfn" href="#safely-upgradable-requests" id="ref-for-safely-upgradable-requests-3">safely upgradable requests</a>. 
       <div class="example" id="example-16071ce8">
        <a class="self-link" href="#example-16071ce8"></a> In Nginx, adding this header conditionally might look like this (note
         the use of <code>map</code>, as setting headers inside <code>if</code> without returning immediately is, well, iffy): 
@@ -1574,27 +1659,31 @@ secure transport before fetching them.</p>
       <p>A <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request">request</a> is said to be <strong>upgraded</strong> if it is rewritten
  to contain a URL with a <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-scheme">scheme</a></code> of <code>https</code> or <code>wss</code>.</p>
      <dt data-md="">
-      <p><dfn data-dfn-type="dfn" data-export="" data-local-lt="safely upgradable" id="safely-upgradable-requests">safely upgradable requests<a class="self-link" href="#safely-upgradable-requests"></a></dfn></p>
+      <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-local-lt="safely upgradable" data-lt="safely upgradable requests" id="safely-upgradable-requests">safely upgradable requests<span class="dfn-panel" data-deco=""><b><a href="#safely-upgradable-requests">#safely-upgradable-requests</a></b><b>Referenced in:</b><span><a href="#ref-for-safely-upgradable-requests-1">1.3. Recommendations</a> <a href="#ref-for-safely-upgradable-requests-2">(2)</a> <a href="#ref-for-safely-upgradable-requests-3">(3)</a></span></span></dfn></p>
      <dd data-md="">
-      <p>A <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request">request</a> is said to be <strong>safely upgradable</strong> if the <a data-link-type="dfn" href="https://tools.ietf.org/html/rfc7231#section-3">resource representation</a> which will be returned does not require the <code><a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a></code> mechanism described in this
-  document to avoid breakage, or if the <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request">request</a>’s <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-header-list">header-list</a> contains an <a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field"><code>Upgrade-Insecure-Requests</code> header field</a> with a value of <code>1</code>.</p>
+      <p>A <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request">request</a> is said to be <strong>safely upgradable</strong> if the <a data-link-type="dfn" href="https://tools.ietf.org/html/rfc7231#section-3">resource representation</a> which will be returned does not require the <code><a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests-9">upgrade-insecure-requests</a></code> mechanism described in this
+  document to avoid breakage, or if the <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request">request</a>’s <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-header-list">header-list</a> contains an <a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field" id="ref-for-upgrade-insecure-requests-http-request-header-field-1"><code>Upgrade-Insecure-Requests</code> header field</a> with a value of <code>1</code>.</p>
      <dt data-md="">
-      <p><dfn data-dfn-type="dfn" data-export="" data-local-lt="HSTS-safe" id="hsts-safe-origin">HSTS-safe origin<a class="self-link" href="#hsts-safe-origin"></a></dfn></p>
+      <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-local-lt="HSTS-safe" data-lt="HSTS-safe origin" id="hsts-safe-origin">HSTS-safe origin<span class="dfn-panel" data-deco=""><b><a href="#hsts-safe-origin">#hsts-safe-origin</a></b><b>Referenced in:</b><span><a href="#ref-for-hsts-safe-origin-1">1.3. Recommendations</a></span><span><a href="#ref-for-hsts-safe-origin-2">2. Key Concepts and Terminology</a></span><span><a href="#ref-for-hsts-safe-origin-3">3.2.1. 
+    The Upgrade-Insecure-Requests HTTP Request Header Field </a> <a href="#ref-for-hsts-safe-origin-4">(2)</a></span></span></dfn></p>
      <dd data-md="">
-      <p>An <a data-link-type="dfn" href="https://tools.ietf.org/html/rfc6454#section-3.2">origin</a> is said to be <strong>HSTS-safe</strong> if no <a data-link-type="dfn" href="https://tools.ietf.org/html/rfc7231#section-3">resource representations</a> it returns requires the the <code><a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a></code> mechanism described in
+      <p>An <a data-link-type="dfn" href="https://tools.ietf.org/html/rfc6454#section-3.2">origin</a> is said to be <strong>HSTS-safe</strong> if no <a data-link-type="dfn" href="https://tools.ietf.org/html/rfc7231#section-3">resource representations</a> it returns requires the the <code><a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests-10">upgrade-insecure-requests</a></code> mechanism described in
   this document to avoid breakage, and if all <a data-link-type="dfn" href="https://tools.ietf.org/html/rfc7231#section-3">resource representations</a> it returns can be served over HTTPS.</p>
-      <p><a data-link-type="dfn" href="#hsts-safe-origin">HSTS-safe origins</a> can safely opt-into <code><a data-link-type="dfn" href="https://tools.ietf.org/html/rfc6797#section-6.1">Strict-Transport-Security</a></code> for all user agents,
-  without risking broken pages for user agents which do not support <code><a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a></code>.</p>
+      <p><a data-link-type="dfn" href="#hsts-safe-origin" id="ref-for-hsts-safe-origin-2">HSTS-safe origins</a> can safely opt-into <code><a data-link-type="dfn" href="https://tools.ietf.org/html/rfc6797#section-6.1">Strict-Transport-Security</a></code> for all user agents,
+  without risking broken pages for user agents which do not support <code><a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests-11">upgrade-insecure-requests</a></code>.</p>
      <dt data-md="">
-      <p><dfn data-dfn-type="dfn" data-export="" data-local-lt="conditionally HSTS-safe" id="conditionally-hsts-safe-origin">conditionally HSTS-safe origin<a class="self-link" href="#conditionally-hsts-safe-origin"></a></dfn></p>
+      <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-local-lt="conditionally HSTS-safe" data-lt="conditionally HSTS-safe origin" id="conditionally-hsts-safe-origin">conditionally HSTS-safe origin<span class="dfn-panel" data-deco=""><b><a href="#conditionally-hsts-safe-origin">#conditionally-hsts-safe-origin</a></b><b>Referenced in:</b><span><a href="#ref-for-conditionally-hsts-safe-origin-1">1.3. Recommendations</a></span><span><a href="#ref-for-conditionally-hsts-safe-origin-2">2. Key Concepts and Terminology</a></span><span><a href="#ref-for-conditionally-hsts-safe-origin-3">3.2. Feature Detecting Clients Capable of Upgrading</a></span><span><a href="#ref-for-conditionally-hsts-safe-origin-4">3.2.1. 
+    The Upgrade-Insecure-Requests HTTP Request Header Field </a></span></span></dfn></p>
      <dd data-md="">
-      <p>An <a data-link-type="dfn" href="https://tools.ietf.org/html/rfc6454#section-3.2">origin</a> is said to be <strong>conditionally HSTS-safe</strong> if one or more <a data-link-type="dfn" href="https://tools.ietf.org/html/rfc7231#section-3">resource representations</a> it returns requires the <code><a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a></code> mechanism described in
+      <p>An <a data-link-type="dfn" href="https://tools.ietf.org/html/rfc6454#section-3.2">origin</a> is said to be <strong>conditionally HSTS-safe</strong> if one or more <a data-link-type="dfn" href="https://tools.ietf.org/html/rfc7231#section-3">resource representations</a> it returns requires the <code><a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests-12">upgrade-insecure-requests</a></code> mechanism described in
   this document to avoid breakage, and if all <a data-link-type="dfn" href="https://tools.ietf.org/html/rfc7231#section-3">resource representations</a> it
   returns can be served over HTTPS.</p>
-      <p><a data-link-type="dfn" href="#conditionally-hsts-safe-origin">Conditionally HSTS-safe origins</a> can safely opt-into <code><a data-link-type="dfn" href="https://tools.ietf.org/html/rfc6797#section-6.1">Strict-Transport-Security</a></code> only for user agents which
-  support <code><a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a></code>.</p>
+      <p><a data-link-type="dfn" href="#conditionally-hsts-safe-origin" id="ref-for-conditionally-hsts-safe-origin-2">Conditionally HSTS-safe origins</a> can safely opt-into <code><a data-link-type="dfn" href="https://tools.ietf.org/html/rfc6797#section-6.1">Strict-Transport-Security</a></code> only for user agents which
+  support <code><a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests-13">upgrade-insecure-requests</a></code>.</p>
      <dt data-md="">
-      <p><dfn data-dfn-type="dfn" data-export="" id="preloadable-hsts-host">preloadable HSTS host<a class="self-link" href="#preloadable-hsts-host"></a></dfn></p>
+      <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="preloadable HSTS host" id="preloadable-hsts-host">preloadable HSTS host<span class="dfn-panel" data-deco=""><b><a href="#preloadable-hsts-host">#preloadable-hsts-host</a></b><b>Referenced in:</b><span><a href="#ref-for-preloadable-hsts-host-1">3.2.1. 
+    The Upgrade-Insecure-Requests HTTP Request Header Field </a> <a href="#ref-for-preloadable-hsts-host-2">(2)</a> <a href="#ref-for-preloadable-hsts-host-3">(3)</a></span><span><a href="#ref-for-preloadable-hsts-host-4">4.1. 
+    Upgrade request to a potentially secure URL, if appropriate </a></span><span><a href="#ref-for-preloadable-hsts-host-5">7. Performance Considerations</a> <a href="#ref-for-preloadable-hsts-host-6">(2)</a></span></span></dfn></p>
      <dd data-md="">
       <p>A <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-host">host</a></code> <var>host</var> is a <strong>preloadable HSTS
   host</strong> if, when performing <a data-link-type="dfn" href="https://tools.ietf.org/html/rfc6797#section-8.2">Known HSTS Host Domain Name
@@ -1615,14 +1704,22 @@ secure transport before fetching them.</p>
     <p>To support this instruction:</p>
     <ol>
      <li> <a data-link-type="dfn" href="http://www.w3.org/TR/html5/webappapis.html#settings-object">Environment settings objects</a> and <a data-link-type="dfn" href="http://www.w3.org/TR/html5/browsers.html#browsing-context">browsing contexts</a> are
-      given an <dfn data-dfn-type="dfn" data-export="" id="insecure-requests-policy">insecure requests policy<a class="self-link" href="#insecure-requests-policy"></a></dfn> which has two
-      potential values <dfn class="css" data-dfn-for="insecure requests policy" data-dfn-type="value" data-export="" id="valdef-insecure-requests-policy-do-not-upgrade">Do Not
-      Upgrade<a class="self-link" href="#valdef-insecure-requests-policy-do-not-upgrade"></a></dfn> and <dfn class="css" data-dfn-for="insecure requests policy" data-dfn-type="value" data-export="" id="valdef-insecure-requests-policy-upgrade">Upgrade<a class="self-link" href="#valdef-insecure-requests-policy-upgrade"></a></dfn>. It is
-      set to <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-do-not-upgrade">Do Not Upgrade</a> unless otherwise specified. This policy
+      given an <dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="insecure requests policy" id="insecure-requests-policy">insecure requests policy<span class="dfn-panel" data-deco=""><b><a href="#insecure-requests-policy">#insecure-requests-policy</a></b><b>Referenced in:</b><span><a href="#ref-for-insecure-requests-policy-1">3.1. 
+    The upgrade-insecure-requests Content Security Policy directive </a></span><span><a href="#ref-for-insecure-requests-policy-2">3.3. Policy Inheritance</a> <a href="#ref-for-insecure-requests-policy-3">(2)</a> <a href="#ref-for-insecure-requests-policy-4">(3)</a> <a href="#ref-for-insecure-requests-policy-5">(4)</a> <a href="#ref-for-insecure-requests-policy-6">(5)</a> <a href="#ref-for-insecure-requests-policy-7">(6)</a> <a href="#ref-for-insecure-requests-policy-8">(7)</a></span><span><a href="#ref-for-insecure-requests-policy-9">4.2. 
+    Should insecure requests be upgraded for client? </a> <a href="#ref-for-insecure-requests-policy-10">(2)</a> <a href="#ref-for-insecure-requests-policy-11">(3)</a></span></span></dfn> which has two
+      potential values <dfn class="dfn-paneled css" data-dfn-for="insecure requests policy" data-dfn-type="value" data-export="" data-lt="Do Not
+      Upgrade" id="valdef-insecure-requests-policy-do-not-upgrade">Do Not
+      Upgrade<span class="dfn-panel" data-deco=""><b><a href="#valdef-insecure-requests-policy-do-not-upgrade">#valdef-insecure-requests-policy-do-not-upgrade</a></b><b>Referenced in:</b><span><a href="#ref-for-valdef-insecure-requests-policy-do-not-upgrade-1">3. Upgrading Insecure Resource Requests</a></span><span><a href="#ref-for-valdef-insecure-requests-policy-do-not-upgrade-2">4.1. 
+    Upgrade request to a potentially secure URL, if appropriate </a></span><span><a href="#ref-for-valdef-insecure-requests-policy-do-not-upgrade-3">4.2. 
+    Should insecure requests be upgraded for client? </a> <a href="#ref-for-valdef-insecure-requests-policy-do-not-upgrade-4">(2)</a></span><span><a href="#ref-for-valdef-insecure-requests-policy-do-not-upgrade-5">5. Modifications to WebSockets</a></span></span></dfn> and <dfn class="dfn-paneled css" data-dfn-for="insecure requests policy" data-dfn-type="value" data-export="" data-lt="Upgrade" id="valdef-insecure-requests-policy-upgrade">Upgrade<span class="dfn-panel" data-deco=""><b><a href="#valdef-insecure-requests-policy-upgrade">#valdef-insecure-requests-policy-upgrade</a></b><b>Referenced in:</b><span><a href="#ref-for-valdef-insecure-requests-policy-upgrade-1">3.1. 
+    The upgrade-insecure-requests Content Security Policy directive </a></span><span><a href="#ref-for-valdef-insecure-requests-policy-upgrade-2">3.3. Policy Inheritance</a> <a href="#ref-for-valdef-insecure-requests-policy-upgrade-3">(2)</a> <a href="#ref-for-valdef-insecure-requests-policy-upgrade-4">(3)</a> <a href="#ref-for-valdef-insecure-requests-policy-upgrade-5">(4)</a> <a href="#ref-for-valdef-insecure-requests-policy-upgrade-6">(5)</a> <a href="#ref-for-valdef-insecure-requests-policy-upgrade-7">(6)</a> <a href="#ref-for-valdef-insecure-requests-policy-upgrade-8">(7)</a></span></span></dfn>. It is
+      set to <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-do-not-upgrade" id="ref-for-valdef-insecure-requests-policy-do-not-upgrade-1">Do Not Upgrade</a> unless otherwise specified. This policy
       is checked in <a href="#upgrade-request">§4.1 Upgrade request to a potentially secure URL, if appropriate</a> in order to determine whether or not
       non-navigation requests and form submissions should be upgraded during <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#fetching">fetching</a>. 
      <li> <a data-link-type="dfn" href="http://www.w3.org/TR/html5/webappapis.html#settings-object">Environment settings objects</a> and <a data-link-type="dfn" href="http://www.w3.org/TR/html5/browsers.html#browsing-context">browsing contexts</a> are
-      given an <dfn data-dfn-type="dfn" data-export="" id="upgrade-insecure-navigations-set">upgrade insecure navigations set<a class="self-link" href="#upgrade-insecure-navigations-set"></a></dfn> which
+      given an <dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="upgrade insecure navigations set" id="upgrade-insecure-navigations-set">upgrade insecure navigations set<span class="dfn-panel" data-deco=""><b><a href="#upgrade-insecure-navigations-set">#upgrade-insecure-navigations-set</a></b><b>Referenced in:</b><span><a href="#ref-for-upgrade-insecure-navigations-set-1">3.1. 
+    The upgrade-insecure-requests Content Security Policy directive </a></span><span><a href="#ref-for-upgrade-insecure-navigations-set-2">3.3. Policy Inheritance</a> <a href="#ref-for-upgrade-insecure-navigations-set-3">(2)</a> <a href="#ref-for-upgrade-insecure-navigations-set-4">(3)</a> <a href="#ref-for-upgrade-insecure-navigations-set-5">(4)</a> <a href="#ref-for-upgrade-insecure-navigations-set-6">(5)</a> <a href="#ref-for-upgrade-insecure-navigations-set-7">(6)</a></span><span><a href="#ref-for-upgrade-insecure-navigations-set-8">4.1. 
+    Upgrade request to a potentially secure URL, if appropriate </a></span></span></dfn> which
       contains a set of (<code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-host">host</a></code>, <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-port">port</a></code>) tuples to which navigations
       ought to be upgraded. Its value is the empty set unless otherwise
       specified. This set is checked in <a href="#upgrade-request">§4.1 Upgrade request to a potentially secure URL, if appropriate</a> in order to
@@ -1630,7 +1727,9 @@ secure transport before fetching them.</p>
     </ol>
     <h3 class="heading settled" data-level="3.1" id="delivery"><span class="secno">3.1. </span><span class="content"> The <code>upgrade-insecure-requests</code> Content Security Policy directive </span><a class="self-link" href="#delivery"></a></h3>
     <p>A server MAY instruct a user agent to upgrade insecure requests for a
-  particular <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#protected-resource">protected resource</a> by sending a <code><a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#content-security-policy">Content-Security-Policy</a></code> header <a data-link-type="biblio" href="#biblio-csp">[CSP]</a> that contains a <dfn data-dfn-type="dfn" data-export="" id="upgrade-insecure-requests">upgrade-insecure-requests<a class="self-link" href="#upgrade-insecure-requests"></a></dfn> directive, defined via the
+  particular <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#protected-resource">protected resource</a> by sending a <code><a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#content-security-policy">Content-Security-Policy</a></code> header <a data-link-type="biblio" href="#biblio-csp">[CSP]</a> that contains a <dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="upgrade-insecure-requests" id="upgrade-insecure-requests">upgrade-insecure-requests<span class="dfn-panel" data-deco=""><b><a href="#upgrade-insecure-requests">#upgrade-insecure-requests</a></b><b>Referenced in:</b><span><a href="#ref-for-upgrade-insecure-requests-1">1. Introduction</a></span><span><a href="#ref-for-upgrade-insecure-requests-2">1.2.1. Non-navigational Upgrades</a></span><span><a href="#ref-for-upgrade-insecure-requests-3">1.2.2. Navigational Upgrades</a> <a href="#ref-for-upgrade-insecure-requests-4">(2)</a></span><span><a href="#ref-for-upgrade-insecure-requests-5">1.2.3. Failed Upgrade</a></span><span><a href="#ref-for-upgrade-insecure-requests-6">1.3. Recommendations</a> <a href="#ref-for-upgrade-insecure-requests-7">(2)</a> <a href="#ref-for-upgrade-insecure-requests-8">(3)</a></span><span><a href="#ref-for-upgrade-insecure-requests-9">2. Key Concepts and Terminology</a> <a href="#ref-for-upgrade-insecure-requests-10">(2)</a> <a href="#ref-for-upgrade-insecure-requests-11">(3)</a> <a href="#ref-for-upgrade-insecure-requests-12">(4)</a> <a href="#ref-for-upgrade-insecure-requests-13">(5)</a></span><span><a href="#ref-for-upgrade-insecure-requests-14">3.1.1. Relation to "Mixed Content"</a> <a href="#ref-for-upgrade-insecure-requests-15">(2)</a></span><span><a href="#ref-for-upgrade-insecure-requests-16">3.2.1. 
+    The Upgrade-Insecure-Requests HTTP Request Header Field </a> <a href="#ref-for-upgrade-insecure-requests-17">(2)</a> <a href="#ref-for-upgrade-insecure-requests-18">(3)</a></span><span><a href="#ref-for-upgrade-insecure-requests-19">3.4. Reporting Upgrades</a></span><span><a href="#ref-for-upgrade-insecure-requests-20">4.2. 
+    Should insecure requests be upgraded for client? </a></span><span><a href="#ref-for-upgrade-insecure-requests-21">6.1. Interaction with HSTS</a></span><span><a href="#ref-for-upgrade-insecure-requests-22">6.2. CSP Violation Reports</a></span><span><a href="#ref-for-upgrade-insecure-requests-23">8.1. Legacy Clients</a></span><span><a href="#ref-for-upgrade-insecure-requests-24">8.2. Relation to HSTS</a> <a href="#ref-for-upgrade-insecure-requests-25">(2)</a></span></span></dfn> directive, defined via the
   following ABNF grammar:</p>
 <pre>directive-name  = "upgrade-insecure-requests"
 directive-value = ""
@@ -1639,9 +1738,9 @@ directive-value = ""
     <ol>
      <li> Let <var>settings</var> be the <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#protected-resource">protected resource</a>’s <a data-link-type="dfn" href="http://www.w3.org/TR/html5/webappapis.html#incumbent-settings-object">incumbent
       settings object</a>. 
-     <li> Set <var>setting</var>’s <a data-link-type="dfn" href="#insecure-requests-policy">insecure requests policy</a> to <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-upgrade">Upgrade</a>. 
+     <li> Set <var>setting</var>’s <a data-link-type="dfn" href="#insecure-requests-policy" id="ref-for-insecure-requests-policy-1">insecure requests policy</a> to <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-upgrade" id="ref-for-valdef-insecure-requests-policy-upgrade-1">Upgrade</a>. 
      <li> Let <var>tuple</var> be a tuple of the <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#protected-resource">protected resource</a>’s <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url">URL</a></code>'s <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-host">host</a></code> and <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-port">port</a></code>. 
-     <li> Insert <var>tuple</var> into <var>settings</var>’s <a data-link-type="dfn" href="#upgrade-insecure-navigations-set">upgrade insecure
+     <li> Insert <var>tuple</var> into <var>settings</var>’s <a data-link-type="dfn" href="#upgrade-insecure-navigations-set" id="ref-for-upgrade-insecure-navigations-set-1">upgrade insecure
       navigations set</a>. 
     </ol>
     <p><a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#monitor">Monitoring</a> the <code>upgrade-insecure-requests</code> directive has
@@ -1651,12 +1750,12 @@ directive-value = ""
   example, <code><a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#content-security-policy-report-only">Content-Security-Policy-Report-Only</a>:
   default-src https:; report-uri /endpoint</code>. See <a href="#reporting-upgrades">§3.4 Reporting Upgrades</a> for additional detail.</p>
     <h4 class="heading settled" data-level="3.1.1" id="mix"><span class="secno">3.1.1. </span><span class="content">Relation to "Mixed Content"</span><a class="self-link" href="#mix"></a></h4>
-    <p>The <code><a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a></code> directive results in
+    <p>The <code><a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests-14">upgrade-insecure-requests</a></code> directive results in
   requests being rewritten at the top of the <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#fetching">Fetching</a> algorithm <a data-link-type="biblio" href="#biblio-fetch">[FETCH]</a>, as specified in <a href="#upgrade-request">§4.1 Upgrade request to a potentially secure URL, if appropriate</a>. It’s important to note that
   the rewrite happens <em>before</em> either Mixed Content <a data-link-type="biblio" href="#biblio-mix">[MIX]</a> or Content
   Security Policy checks take effect <a data-link-type="biblio" href="#biblio-csp">[CSP]</a>.</p>
     <p>This ordering means that upgraded requests <em>will not</em> be flagged as
-  mixed content. Moreover, it means that <code><a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a></code>’s effect takes place before
+  mixed content. Moreover, it means that <code><a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests-15">upgrade-insecure-requests</a></code>’s effect takes place before
   the <code><a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#block-all-mixed-content">block-all-mixed-content</a></code> directive would have a chance
   to block the request. If the former is set, the latter is effectively a no-op.</p>
     <p>We recommend that authors set one directive or the other, as outlined in <a href="#recommendations">§1.3 Recommendations</a>.</p>
@@ -1664,18 +1763,20 @@ directive-value = ""
     <p>Sites which require the upgrade mechanism laid out in this document in order
   to provide users with a reasonable experience over secure transit need some
   way to determine whether or not a particular <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request">request</a> can safely be
-  redirected from HTTP to HTTPS (and vice-versa). Moreover, <a data-link-type="dfn" href="#conditionally-hsts-safe-origin">conditionally
+  redirected from HTTP to HTTPS (and vice-versa). Moreover, <a data-link-type="dfn" href="#conditionally-hsts-safe-origin" id="ref-for-conditionally-hsts-safe-origin-3">conditionally
   HSTS-safe origins</a> can only opt-into <code><a data-link-type="dfn" href="https://tools.ietf.org/html/rfc6797#section-6.1">Strict-Transport-Security</a></code> for supported user agents, and
   doing otherwise could have negative consequences for the site’s users.</p>
     <p>Rather than relying on user-agent sniffing to make this decision, user agents
-  can advertise their upgrade capability when making <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#navigation-request">navigation requests</a> by including an <a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field"><code>Upgrade-Insecure-Requests</code> header field</a> as
+  can advertise their upgrade capability when making <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#navigation-request">navigation requests</a> by including an <a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field" id="ref-for-upgrade-insecure-requests-http-request-header-field-2"><code>Upgrade-Insecure-Requests</code> header field</a> as
   described in <a href="#preference">§3.2.1 The Upgrade-Insecure-Requests HTTP Request Header Field</a>.</p>
     <h4 class="heading settled" data-level="3.2.1" id="preference"><span class="secno">3.2.1. </span><span class="content"> The <code>Upgrade-Insecure-Requests</code> HTTP Request Header Field </span><a class="self-link" href="#preference"></a></h4>
-    <p>The <dfn data-dfn-type="dfn" data-export="" data-local-lt="Upgrade-Insecure-Requests header field" data-lt="Upgrade-Insecure-Requests HTTP request header
+    <p>The <dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-local-lt="Upgrade-Insecure-Requests header field" data-lt="Upgrade-Insecure-Requests HTTP request header
   field" id="upgrade-insecure-requests-http-request-header-field"> <code>Upgrade-Insecure-Requests</code> HTTP request header
-  field<a class="self-link" href="#upgrade-insecure-requests-http-request-header-field"></a></dfn> sends a signal to the server expressing the client’s preference
+  field<span class="dfn-panel" data-deco=""><b><a href="#upgrade-insecure-requests-http-request-header-field">#upgrade-insecure-requests-http-request-header-field</a></b><b>Referenced in:</b><span><a href="#ref-for-upgrade-insecure-requests-http-request-header-field-1">2. Key Concepts and Terminology</a></span><span><a href="#ref-for-upgrade-insecure-requests-http-request-header-field-2">3.2. Feature Detecting Clients Capable of Upgrading</a></span><span><a href="#ref-for-upgrade-insecure-requests-http-request-header-field-3">3.2.1. 
+    The Upgrade-Insecure-Requests HTTP Request Header Field </a> <a href="#ref-for-upgrade-insecure-requests-http-request-header-field-4">(2)</a> <a href="#ref-for-upgrade-insecure-requests-http-request-header-field-5">(3)</a> <a href="#ref-for-upgrade-insecure-requests-http-request-header-field-6">(4)</a> <a href="#ref-for-upgrade-insecure-requests-http-request-header-field-7">(5)</a> <a href="#ref-for-upgrade-insecure-requests-http-request-header-field-8">(6)</a> <a href="#ref-for-upgrade-insecure-requests-http-request-header-field-9">(7)</a> <a href="#ref-for-upgrade-insecure-requests-http-request-header-field-10">(8)</a></span><span><a href="#ref-for-upgrade-insecure-requests-http-request-header-field-11">4.1. 
+    Upgrade request to a potentially secure URL, if appropriate </a> <a href="#ref-for-upgrade-insecure-requests-http-request-header-field-12">(2)</a></span></span></dfn> sends a signal to the server expressing the client’s preference
   for an encrypted and authenticated response, and that it can successfully
-  handle the <code><a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a></code> directive in order
+  handle the <code><a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests-16">upgrade-insecure-requests</a></code> directive in order
   to make that preference as seamless as possible to provide.</p>
     <p>This preference is represented by the following ANBF:</p>
 <pre>"Upgrade-Insecure-Requests:" *<a data-link-type="dfn" href="https://tools.ietf.org/html/rfc5234#appendix-B.1">WSP</a> "1" *<a data-link-type="dfn" href="https://tools.ietf.org/html/rfc5234#appendix-B.1">WSP</a>
@@ -1688,22 +1789,22 @@ directive-value = ""
   requirements:</p>
     <ol>
      <li>
-       User agents MUST send an <a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field"><code>Upgrade-Insecure-Requests</code> header
+       User agents MUST send an <a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field" id="ref-for-upgrade-insecure-requests-http-request-header-field-3"><code>Upgrade-Insecure-Requests</code> header
       field</a> along with <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request">request</a>s for <a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#a-priori-insecure-url"><i lang="la">a priori</i> insecure URLs</a>. 
       <p class="note" role="note">Note: Servers can use this signal to upgrade HTTP requests to HTTPS for
-      pages that require <code><a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a></code> support.</p>
+      pages that require <code><a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests-17">upgrade-insecure-requests</a></code> support.</p>
      <li>
-       User agents MUST send an <a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field"><code>Upgrade-Insecure-Requests</code> header
-      field</a> along with <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request">request</a>s for <a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#potentially-secure-origin">potentially secure URLs</a> whose <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-url">url</a>’s <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-host">host</a></code> is <em>not</em> a <a data-link-type="dfn" href="#preloadable-hsts-host">preloadable HSTS host</a>. 
+       User agents MUST send an <a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field" id="ref-for-upgrade-insecure-requests-http-request-header-field-4"><code>Upgrade-Insecure-Requests</code> header
+      field</a> along with <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request">request</a>s for <a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#potentially-secure-origin">potentially secure URLs</a> whose <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-url">url</a>’s <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-host">host</a></code> is <em>not</em> a <a data-link-type="dfn" href="#preloadable-hsts-host" id="ref-for-preloadable-hsts-host-1">preloadable HSTS host</a>. 
       <p class="note" role="note">Note: Servers can use the absence of this signal to downgrade HTTPS
-      requests to HTTP for pages that require <code><a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a></code> support.</p>
+      requests to HTTP for pages that require <code><a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests-18">upgrade-insecure-requests</a></code> support.</p>
      <li>
-       User agents SHOULD periodically send an <a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field"><code>Upgrade-Insecure-Requests</code> header field</a> along with <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request">request</a>s for <a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#potentially-secure-origin">potentially secure URLs</a> whose <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-url">url</a>’s <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-host">host</a></code> <em>is</em> a <a data-link-type="dfn" href="#preloadable-hsts-host">preloadable HSTS host</a>. For example, user
-      agents could send an <a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field"><code>Upgrade-Insecure-Requests</code> header
+       User agents SHOULD periodically send an <a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field" id="ref-for-upgrade-insecure-requests-http-request-header-field-5"><code>Upgrade-Insecure-Requests</code> header field</a> along with <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request">request</a>s for <a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#potentially-secure-origin">potentially secure URLs</a> whose <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-url">url</a>’s <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-host">host</a></code> <em>is</em> a <a data-link-type="dfn" href="#preloadable-hsts-host" id="ref-for-preloadable-hsts-host-2">preloadable HSTS host</a>. For example, user
+      agents could send an <a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field" id="ref-for-upgrade-insecure-requests-http-request-header-field-6"><code>Upgrade-Insecure-Requests</code> header
       field</a> only when the asserted <code>max-age</code> is a few days from
       expiration, or only for a small percentage of requests. 
-      <p class="note" role="note">Note: <a data-link-type="dfn" href="#preloadable-hsts-host">preloadable HSTS hosts</a> have asserted that they are <a data-link-type="dfn" href="#hsts-safe-origin">HSTS-safe</a>, and therefore don’t need a downgrade signal. They will
-      need to refresh HSTS status before the asserted <code>max-age</code> expires, and the <a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field"><code>Upgrade-Insecure-Requests</code> header
+      <p class="note" role="note">Note: <a data-link-type="dfn" href="#preloadable-hsts-host" id="ref-for-preloadable-hsts-host-3">preloadable HSTS hosts</a> have asserted that they are <a data-link-type="dfn" href="#hsts-safe-origin" id="ref-for-hsts-safe-origin-3">HSTS-safe</a>, and therefore don’t need a downgrade signal. They will
+      need to refresh HSTS status before the asserted <code>max-age</code> expires, and the <a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field" id="ref-for-upgrade-insecure-requests-http-request-header-field-7"><code>Upgrade-Insecure-Requests</code> header
       field</a> serves as a fine signal that HSTS could be refreshed.</p>
     </ol>
     <p>When a server encounters this preference in an HTTP request’s headers, it
@@ -1711,21 +1812,21 @@ directive-value = ""
   resource being requested.</p>
     <p>When a server encounters this preference in an HTTPS request’s headers,
   it SHOULD include a <code><a data-link-type="dfn" href="https://tools.ietf.org/html/rfc6797#section-6.1">Strict-Transport-Security</a></code> header in
-  the response if the request’s <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-host">host</a></code> is <a data-link-type="dfn" href="#hsts-safe-origin">HSTS-safe</a> or <a data-link-type="dfn" href="#conditionally-hsts-safe-origin">conditionally HSTS-safe</a> <a data-link-type="biblio" href="#biblio-rfc6797">[RFC6797]</a>.</p>
+  the response if the request’s <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-host">host</a></code> is <a data-link-type="dfn" href="#hsts-safe-origin" id="ref-for-hsts-safe-origin-4">HSTS-safe</a> or <a data-link-type="dfn" href="#conditionally-hsts-safe-origin" id="ref-for-conditionally-hsts-safe-origin-4">conditionally HSTS-safe</a> <a data-link-type="biblio" href="#biblio-rfc6797">[RFC6797]</a>.</p>
     <div class="example" id="example-eeacfe02">
      <a class="self-link" href="#example-eeacfe02"></a> A client that supports this document’s upgrade mechanism requests <code>http://example.com/</code> as follows: 
 <pre>GET / HTTP/1.1
 Host: example.com
-<a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field">Upgrade-Insecure-Requests</a>: 1
+<a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field" id="ref-for-upgrade-insecure-requests-http-request-header-field-8">Upgrade-Insecure-Requests</a>: 1
 </pre>
      <p>The server parses the preference, notices that the user’s client can deal
     well with upgrade requests, and therefore responds to the request by
     redirecting the user to a secure version of the resource she’s requesting:</p>
 <pre>HTTP/1.1 307 Moved Temporarily
 Location: https://example.com/
-<a data-link-type="dfn" href="https://tools.ietf.org/html/rfc7231#section-7.1.4">Vary</a>: <a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field">Upgrade-Insecure-Requests</a>
+<a data-link-type="dfn" href="https://tools.ietf.org/html/rfc7231#section-7.1.4">Vary</a>: <a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field" id="ref-for-upgrade-insecure-requests-http-request-header-field-9">Upgrade-Insecure-Requests</a>
 </pre>
-     <p>The <a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field"><code>Upgrade-Insecure-Requests</code> header field</a> is listed in the <a data-link-type="dfn" href="https://tools.ietf.org/html/rfc7231#section-7.1.4"><code>Vary</code></a> header, as the
+     <p>The <a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field" id="ref-for-upgrade-insecure-requests-http-request-header-field-10"><code>Upgrade-Insecure-Requests</code> header field</a> is listed in the <a data-link-type="dfn" href="https://tools.ietf.org/html/rfc7231#section-7.1.4"><code>Vary</code></a> header, as the
     redirect response might otherwise be served by caches to clients that
     don’t support the upgrade mechanism defined here. A similar effect could be
     achieved by making this redirect response uncachable via the <a data-link-type="dfn" href="https://tools.ietf.org/html/rfc7234#section-5.2"><code>Cache-Control</code></a> header:</p>
@@ -1735,20 +1836,20 @@ Location: https://example.com/
 </pre>
     </div>
     <h3 class="heading settled" data-level="3.3" id="nesting"><span class="secno">3.3. </span><span class="content">Policy Inheritance</span><a class="self-link" href="#nesting"></a></h3>
-    <p>If a <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/dom/#interface-document">Document</a></code>'s <a data-link-type="dfn" href="http://www.w3.org/TR/html5/webappapis.html#incumbent-settings-object">incumbent settings object</a>’s <a data-link-type="dfn" href="#insecure-requests-policy">insecure requests
-  policy</a> is set to <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-upgrade">Upgrade</a>, the user agent MUST ensure that
+    <p>If a <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/dom/#interface-document">Document</a></code>'s <a data-link-type="dfn" href="http://www.w3.org/TR/html5/webappapis.html#incumbent-settings-object">incumbent settings object</a>’s <a data-link-type="dfn" href="#insecure-requests-policy" id="ref-for-insecure-requests-policy-2">insecure requests
+  policy</a> is set to <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-upgrade" id="ref-for-valdef-insecure-requests-policy-upgrade-2">Upgrade</a>, the user agent MUST ensure that
   all <a data-link-type="dfn" href="http://www.w3.org/TR/html5/browsers.html#nested-browsing-context">nested browsing contexts</a> inherit the setting in the following ways:</p>
     <ol>
      <li>
        When a <a data-link-type="dfn" href="http://www.w3.org/TR/html5/browsers.html#nested-browsing-context">nested browsing context</a> <var>context</var> is created: 
       <ol>
        <li>
-         If <var>context</var>’s <a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#embedding-document">embedding document</a>’s <a data-link-type="dfn" href="#insecure-requests-policy">insecure
-          requests policy</a> is <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-upgrade">Upgrade</a>, then: 
+         If <var>context</var>’s <a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#embedding-document">embedding document</a>’s <a data-link-type="dfn" href="#insecure-requests-policy" id="ref-for-insecure-requests-policy-3">insecure
+          requests policy</a> is <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-upgrade" id="ref-for-valdef-insecure-requests-policy-upgrade-3">Upgrade</a>, then: 
         <ol>
-         <li> Set <var>context</var>’s <a data-link-type="dfn" href="#insecure-requests-policy">insecure requests policy</a> to <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-upgrade">Upgrade</a>. 
+         <li> Set <var>context</var>’s <a data-link-type="dfn" href="#insecure-requests-policy" id="ref-for-insecure-requests-policy-4">insecure requests policy</a> to <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-upgrade" id="ref-for-valdef-insecure-requests-policy-upgrade-4">Upgrade</a>. 
          <li> For each <var>value</var> in <var>context</var>’s <a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#embedding-document">embedding
-              document</a>’s <a data-link-type="dfn" href="#upgrade-insecure-navigations-set">upgrade insecure navigations set</a>, add <var>value</var> to <var>context</var>’s <a data-link-type="dfn" href="#upgrade-insecure-navigations-set">upgrade insecure
+              document</a>’s <a data-link-type="dfn" href="#upgrade-insecure-navigations-set" id="ref-for-upgrade-insecure-navigations-set-2">upgrade insecure navigations set</a>, add <var>value</var> to <var>context</var>’s <a data-link-type="dfn" href="#upgrade-insecure-navigations-set" id="ref-for-upgrade-insecure-navigations-set-3">upgrade insecure
               navigations set</a>. 
         </ol>
       </ol>
@@ -1756,13 +1857,13 @@ Location: https://example.com/
        When <a data-link-type="dfn" href="http://www.w3.org/TR/html5/browsers.html#create-a-document-object">creating a new <code>Document</code> object</a> <var>document</var> in a <a data-link-type="dfn" href="http://www.w3.org/TR/html5/browsers.html#browsing-context">browsing context</a> <var>context</var>: 
       <ol>
        <li>
-         If <var>context</var>’s <a data-link-type="dfn" href="#insecure-requests-policy">insecure requests policy</a> is <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-upgrade">Upgrade</a>, then: 
+         If <var>context</var>’s <a data-link-type="dfn" href="#insecure-requests-policy" id="ref-for-insecure-requests-policy-5">insecure requests policy</a> is <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-upgrade" id="ref-for-valdef-insecure-requests-policy-upgrade-5">Upgrade</a>, then: 
         <ol>
          <li> Let <var>settings</var> be <var>document</var>’s <a data-link-type="dfn" href="http://www.w3.org/TR/html5/webappapis.html#incumbent-settings-object">incumbent
               settings object</a>. 
-         <li> Set <var>settings</var>’ <a data-link-type="dfn" href="#insecure-requests-policy">insecure requests policy</a> to <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-upgrade">Upgrade</a>. 
-         <li> For each <var>value</var> in <var>context</var>’s <a data-link-type="dfn" href="#upgrade-insecure-navigations-set">upgrade
-              insecure navigations set</a>, add <var>value</var> to <var>settings</var>’s <a data-link-type="dfn" href="#upgrade-insecure-navigations-set">upgrade insecure navigations set</a>. 
+         <li> Set <var>settings</var>’ <a data-link-type="dfn" href="#insecure-requests-policy" id="ref-for-insecure-requests-policy-6">insecure requests policy</a> to <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-upgrade" id="ref-for-valdef-insecure-requests-policy-upgrade-6">Upgrade</a>. 
+         <li> For each <var>value</var> in <var>context</var>’s <a data-link-type="dfn" href="#upgrade-insecure-navigations-set" id="ref-for-upgrade-insecure-navigations-set-4">upgrade
+              insecure navigations set</a>, add <var>value</var> to <var>settings</var>’s <a data-link-type="dfn" href="#upgrade-insecure-navigations-set" id="ref-for-upgrade-insecure-navigations-set-5">upgrade insecure navigations set</a>. 
         </ol>
       </ol>
     </ol>
@@ -1773,12 +1874,12 @@ Location: https://example.com/
        When executing the <a data-link-type="dfn" href="http://www.w3.org/TR/workers/#script-settings-for-workers">set up a worker environment settings object</a> algorithm, perform the following steps after the current step #4: 
       <ol start="5">
        <li>
-         If <var>inherited responsible browsing context</var>’s <a data-link-type="dfn" href="#insecure-requests-policy">insecure
-          requests policy</a> is <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-upgrade">Upgrade</a>, then: 
+         If <var>inherited responsible browsing context</var>’s <a data-link-type="dfn" href="#insecure-requests-policy" id="ref-for-insecure-requests-policy-7">insecure
+          requests policy</a> is <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-upgrade" id="ref-for-valdef-insecure-requests-policy-upgrade-7">Upgrade</a>, then: 
         <ol>
-         <li> Set <var>settings object</var>’s <a data-link-type="dfn" href="#insecure-requests-policy">insecure requests policy</a> to <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-upgrade">Upgrade</a>. 
+         <li> Set <var>settings object</var>’s <a data-link-type="dfn" href="#insecure-requests-policy" id="ref-for-insecure-requests-policy-8">insecure requests policy</a> to <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-upgrade" id="ref-for-valdef-insecure-requests-policy-upgrade-8">Upgrade</a>. 
          <li> For each <var>value</var> in <var>inherited responsible browsing
-              context</var>’s <a data-link-type="dfn" href="#upgrade-insecure-navigations-set">upgrade insecure navigations set</a>, add <var>value</var> to <var>settings object</var>’s <a data-link-type="dfn" href="#upgrade-insecure-navigations-set">upgrade
+              context</var>’s <a data-link-type="dfn" href="#upgrade-insecure-navigations-set" id="ref-for-upgrade-insecure-navigations-set-6">upgrade insecure navigations set</a>, add <var>value</var> to <var>settings object</var>’s <a data-link-type="dfn" href="#upgrade-insecure-navigations-set" id="ref-for-upgrade-insecure-navigations-set-7">upgrade
               insecure navigations set</a>. 
         </ol>
       </ol>
@@ -1792,7 +1893,7 @@ Location: https://example.com/
      <a class="self-link" href="#example-9ef88697"></a> Within the context of a <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#protected-resource">protected resource</a> which contains the
     insecure image <code>&lt;img src="http://example.com/image.png"></code>,
     and delivers the following HTTP headers: 
-<pre><a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#content-security-policy">Content-Security-Policy</a>: <a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a>; <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#default-src">default-src</a> https:
+<pre><a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#content-security-policy">Content-Security-Policy</a>: <a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests-19">upgrade-insecure-requests</a>; <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#default-src">default-src</a> https:
 <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#content-security-policy-report-only">Content-Security-Policy-Report-Only</a>: <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#default-src">default-src</a> https:; <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#report-uri">report-uri</a> /endpoint
 </pre>
      <p>The user agent will fire off a <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request">request</a> <var>request</var> that:</p>
@@ -1809,7 +1910,7 @@ Location: https://example.com/
     <h2 class="heading settled" data-level="4" id="algorithms"><span class="secno">4. </span><span class="content">Processing Algorithms</span><a class="self-link" href="#algorithms"></a></h2>
     <h3 class="heading settled" data-level="4.1" id="upgrade-request"><span class="secno">4.1. </span><span class="content"> Upgrade <var>request</var> to a potentially secure URL, if appropriate </span><a class="self-link" href="#upgrade-request"></a></h3>
     <p>Given a <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request">request</a> <var>request</var>, this algorithm will rewrite its <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-url">url</a> if the <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-client">client</a> from which the request originates
-  has opted-in to upgrades. It will also inject an <a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field"><code>Upgrade-Insecure-Requests</code> header field</a> header for
+  has opted-in to upgrades. It will also inject an <a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field" id="ref-for-upgrade-insecure-requests-http-request-header-field-11"><code>Upgrade-Insecure-Requests</code> header field</a> header for
   insecure <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#navigation-request">navigation requests</a> in order to improve a server’s ability to
   feature-detect a client’s upgrade capabilities.</p>
     <p>We will not upgrade cross-origin <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#navigation-request">navigation requests</a>, with the
@@ -1823,9 +1924,9 @@ Location: https://example.com/
       criteria are met: 
       <ol>
        <li> <var>request</var>’s <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-url">url</a> is <a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#a-priori-insecure-url"><i lang="la">a priori</i> insecure</a> 
-       <li> <var>request</var>’s <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-url">url</a>’s <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-host">host</a></code> is <em>not</em> a <a data-link-type="dfn" href="#preloadable-hsts-host">preloadable HSTS host</a> 
+       <li> <var>request</var>’s <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-url">url</a>’s <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-host">host</a></code> is <em>not</em> a <a data-link-type="dfn" href="#preloadable-hsts-host" id="ref-for-preloadable-hsts-host-4">preloadable HSTS host</a> 
       </ol>
-      <p class="note" role="note">Note: User agents can choose to append the <a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field"><code>Upgrade-Insecure-Requests</code> header field</a> for other
+      <p class="note" role="note">Note: User agents can choose to append the <a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field" id="ref-for-upgrade-insecure-requests-http-request-header-field-12"><code>Upgrade-Insecure-Requests</code> header field</a> for other
       requests, as discussed in <a href="#preference">§3.2.1 The Upgrade-Insecure-Requests HTTP Request Header Field</a>.</p>
      <li>
        If <var>request</var> is a <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#navigation-request">navigation request</a>, then: 
@@ -1834,7 +1935,7 @@ Location: https://example.com/
           substeps, and continue upgrading <var>request</var>. 
        <li> Let <var>tuple</var> be a tuple of <var>request</var>’s <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-url">url</a>’s <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-host">host</a></code> and <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-port">port</a></code>. 
        <li>
-         If <var>tuple</var> is contained in <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-client">client</a>’s <a data-link-type="dfn" href="#upgrade-insecure-navigations-set">upgrade insecure navigations set</a>, then skip the remaining
+         If <var>tuple</var> is contained in <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-client">client</a>’s <a data-link-type="dfn" href="#upgrade-insecure-navigations-set" id="ref-for-upgrade-insecure-navigations-set-8">upgrade insecure navigations set</a>, then skip the remaining
           substeps, and continue upgrading <var>request</var>. 
         <p class="note" role="note">Note: We only upgrade top-level <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#navigation-request">navigation requests</a> for hosts
           that have explicitly opted-into the behavior for a particular <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#protected-resource">protected resource</a>, as described in <a href="#examples">§1.2 Examples</a>. Performing
@@ -1844,7 +1945,7 @@ Location: https://example.com/
        <li> Return without further modifying <var>request</var>. 
       </ol>
      <li> Let <var>upgrade state</var> be the result of executing <a href="#should-upgrade-for-client">§4.2 Should insecure requests be upgraded for client?</a> upon <var>request</var>’s <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-client">client</a>. 
-     <li> If <var>upgrade state</var> is <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-do-not-upgrade">Do Not Upgrade</a>, return without
+     <li> If <var>upgrade state</var> is <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-do-not-upgrade" id="ref-for-valdef-insecure-requests-policy-do-not-upgrade-2">Do Not Upgrade</a>, return without
       modifying <var>request</var>. 
      <li> If <var>request</var>’s <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-url">url</a>’s <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-scheme">scheme</a></code> is <code>http</code>, set <var>request</var>’s <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-url">url</a>’s <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-scheme">scheme</a></code> to <code>https</code>, and return. 
      <li>
@@ -1861,21 +1962,21 @@ Location: https://example.com/
   insecurely-redirected requests as well as insecure initial requests.</p>
     <h3 class="heading settled" data-level="4.2" id="should-upgrade-for-client"><span class="secno">4.2. </span><span class="content"> Should insecure <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request">request</a>s be upgraded for <var>client</var>? </span><a class="self-link" href="#should-upgrade-for-client"></a></h3>
     <p>Given an <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request">request</a>’s <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-client">client</a> <var>client</var> (an <a data-link-type="dfn" href="http://www.w3.org/TR/html5/webappapis.html#settings-object">environment settings object</a>), this algorithm
-  returns <code>Enforced Upgrade</code> if <a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#a-priori-insecure-url"><i lang="la">a priori</i> insecure</a> requests associated with that client should be upgraded, or <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-do-not-upgrade">Do Not Upgrade</a> otherwise. In short, this will check the client
-  and return the appropriate <a data-link-type="dfn" href="#insecure-requests-policy">insecure requests policy</a> set on it or its <a data-link-type="dfn" href="http://www.w3.org/TR/html5/browsers.html#browsing-context">browsing context</a>.</p>
+  returns <code>Enforced Upgrade</code> if <a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#a-priori-insecure-url"><i lang="la">a priori</i> insecure</a> requests associated with that client should be upgraded, or <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-do-not-upgrade" id="ref-for-valdef-insecure-requests-policy-do-not-upgrade-3">Do Not Upgrade</a> otherwise. In short, this will check the client
+  and return the appropriate <a data-link-type="dfn" href="#insecure-requests-policy" id="ref-for-insecure-requests-policy-9">insecure requests policy</a> set on it or its <a data-link-type="dfn" href="http://www.w3.org/TR/html5/browsers.html#browsing-context">browsing context</a>.</p>
     <ol>
      <li>
        If <var>client</var> has a <a data-link-type="dfn" href="http://www.w3.org/TR/html5/webappapis.html#responsible-document">responsible document</a>, return the value
-      of its <a data-link-type="dfn" href="#insecure-requests-policy">insecure requests policy</a>. 
+      of its <a data-link-type="dfn" href="#insecure-requests-policy" id="ref-for-insecure-requests-policy-10">insecure requests policy</a>. 
       <p class="note" role="note">Note: This catches <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/dom/#interface-document">Document</a></code>s or <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/workers/#worker">Worker</a></code>s whose policy is set
-      directly by the <code><a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a></code> directive,
+      directly by the <code><a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests-20">upgrade-insecure-requests</a></code> directive,
       or which have inherited the policy from an <a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#embedding-document">embedding document</a>.</p>
      <li>
        If <var>client</var> has a <a data-link-type="dfn" href="http://www.w3.org/TR/html5/webappapis.html#responsible-browsing-context">responsible browsing context</a>, return the
-      value of its <a data-link-type="dfn" href="#insecure-requests-policy">insecure requests policy</a>. 
+      value of its <a data-link-type="dfn" href="#insecure-requests-policy" id="ref-for-insecure-requests-policy-11">insecure requests policy</a>. 
       <p class="note" role="note">Note: This catches requests triggered from detached <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-client">client</a>s. Not sure this is necessary, really,
       given the inheritance structure defined in <a href="#nesting">§3.3 Policy Inheritance</a>.</p>
-     <li> Return <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-do-not-upgrade">Do Not Upgrade</a>. 
+     <li> Return <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-do-not-upgrade" id="ref-for-valdef-insecure-requests-policy-do-not-upgrade-4">Do Not Upgrade</a>. 
     </ol>
    </section>
    <section>
@@ -1893,7 +1994,7 @@ Location: https://example.com/
         <ol>
          <li> Let <var>upgrade state</var> be the result of executing <a href="#should-upgrade-for-client">§4.2 Should insecure requests be upgraded for client?</a> upon the <a data-link-type="dfn" href="http://www.w3.org/TR/html5/webappapis.html#relevant-settings-object-for-a-script">relevant settings
               object</a> for <var>client</var>’s <var>entry script</var>. 
-         <li> If <var>upgrade state</var> is <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-do-not-upgrade">Do Not Upgrade</a>, skip
+         <li> If <var>upgrade state</var> is <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-do-not-upgrade" id="ref-for-valdef-insecure-requests-policy-do-not-upgrade-5">Do Not Upgrade</a>, skip
               the remaining substeps. 
          <li> Set <var>secure</var> to <code>true</code>. 
          <li>
@@ -1912,7 +2013,7 @@ Location: https://example.com/
    <section>
     <h2 class="heading settled" data-level="6" id="security"><span class="secno">6. </span><span class="content">Security Considerations</span><a class="self-link" href="#security"></a></h2>
     <h3 class="heading settled" data-level="6.1" id="hsts"><span class="secno">6.1. </span><span class="content">Interaction with HSTS</span><a class="self-link" href="#hsts"></a></h3>
-    <p>The <code><a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a></code> directive does not replace
+    <p>The <code><a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests-21">upgrade-insecure-requests</a></code> directive does not replace
   the <code><a data-link-type="dfn" href="https://tools.ietf.org/html/rfc6797#section-6.1">Strict-Transport-Security</a></code> HTTP response header <a data-link-type="biblio" href="#biblio-rfc6797">[RFC6797]</a>. Authors who serve their site over secure transport SHOULD send
   that header with an appropriate <code>max-age</code> in order to ensure that
   users are not subject to SSL stripping attacks by maliciously active network
@@ -1920,7 +2021,7 @@ Location: https://example.com/
     <h3 class="heading settled" data-level="6.2" id="violation-report-target"><span class="secno">6.2. </span><span class="content">CSP Violation Reports</span><a class="self-link" href="#violation-report-target"></a></h3>
     <p>When sending a violation report for an upgraded resource, user agents MUST
   target the <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/dom/#interface-document">Document</a></code> or <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/workers/#worker">Worker</a></code> that triggered the request, rather
-  than the <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/dom/#interface-document">Document</a></code> or <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/workers/#worker">Worker</a></code> on which the <code><a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a></code> directive was set. Due to <a href="#nesting">§3.3 Policy Inheritance</a>, the latter might be a cross-origin ancestor of the former, and
+  than the <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/dom/#interface-document">Document</a></code> or <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/workers/#worker">Worker</a></code> on which the <code><a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests-22">upgrade-insecure-requests</a></code> directive was set. Due to <a href="#nesting">§3.3 Policy Inheritance</a>, the latter might be a cross-origin ancestor of the former, and
   sending violation reports to that set of reporting endpoints could leak data
   in unexpected ways.</p>
     <p>Likewise, the <code>SecurityPolicyViolationEvent</code> MUST NOT target any <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/dom/#interface-document">Document</a></code> other than the one which triggered the request, for the same
@@ -1929,11 +2030,11 @@ Location: https://example.com/
    <section>
     <h2 class="heading settled" data-level="7" id="performance"><span class="secno">7. </span><span class="content">Performance Considerations</span><a class="self-link" href="#performance"></a></h2>
     <p>The upgrade mechanism specified here adds <code>Upgrade-Insecure-Requests:
-  1\r\n</code> to every outgoing <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#navigation-request">navigation request</a> to non-<a data-link-type="dfn" href="#preloadable-hsts-host">preloadable
+  1\r\n</code> to every outgoing <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#navigation-request">navigation request</a> to non-<a data-link-type="dfn" href="#preloadable-hsts-host" id="ref-for-preloadable-hsts-host-5">preloadable
   HSTS hosts</a> (as discussed at length on public-webappsec@, and <a href="https://github.com/w3c/webappsec/issues/216">w3c/webappsec#216</a>).
   The advantages and intent of the header are laid out in <a href="#preference">§3.2.1 The Upgrade-Insecure-Requests HTTP Request Header Field</a>, and
   though we’ve taken some steps to ensure that it won’t be a permanent fixture
-  of the platform (by carving out <a data-link-type="dfn" href="#preloadable-hsts-host">preloadable HSTS hosts</a>), it’s going
+  of the platform (by carving out <a data-link-type="dfn" href="#preloadable-hsts-host" id="ref-for-preloadable-hsts-host-6">preloadable HSTS hosts</a>), it’s going
   to be a long, long time before the header vanishes.</p>
     <p>User agents are encouraged to find additional carveouts, and implement them.</p>
    </section>
@@ -1941,7 +2042,7 @@ Location: https://example.com/
     <h2 class="heading settled" data-level="8" id="authoring"><span class="secno">8. </span><span class="content">Authoring Considerations</span><a class="self-link" href="#authoring"></a></h2>
     <h3 class="heading settled" data-level="8.1" id="legacy-clients"><span class="secno">8.1. </span><span class="content">Legacy Clients</span><a class="self-link" href="#legacy-clients"></a></h3>
     <p>Legacy clients which do support mixed content blocking <a data-link-type="biblio" href="#biblio-mix">[MIX]</a>, but do not
-  support the <code><a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a></code> directive will
+  support the <code><a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests-23">upgrade-insecure-requests</a></code> directive will
   continue to have a suboptimal experience on pages containing <a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#a-priori-insecure-url"><i lang="la">a priori</i> insecure URLs</a>. Authors SHOULD ensure that
   they collect <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#send-violation-reports">violation reports</a> in order
   to determine which resources are most problematic for their users, and SHOULD
@@ -1953,11 +2054,11 @@ Location: https://example.com/
   way reduce the value of the <code>Strict-Transport-Security</code> HTTP
   response header <a data-link-type="biblio" href="#biblio-rfc6797">[RFC6797]</a>. Authors can and should continue to use that
   header to ensure that their users are not subject to SSL stripping downgrade
-  attacks, as the <code><a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a></code> directive will
+  attacks, as the <code><a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests-24">upgrade-insecure-requests</a></code> directive will
   not ensure that users visiting your site via links on third-party sites will
   be upgraded to HTTPS for the top-level navigation.</p>
     <p>Likewise, the <code>Strict-Transport-Security</code> header does not imply
-  the behavior that <code><a data-link-type="dfn" href="#upgrade-insecure-requests">upgrade-insecure-requests</a></code> activates.
+  the behavior that <code><a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests-25">upgrade-insecure-requests</a></code> activates.
   It only ensures that resources requested from an origin will never hit the
   network insecurely.</p>
     <p>We are intentionally keeping these concepts distinct, as authors may choose
@@ -2029,8 +2130,9 @@ Location: https://example.com/
     particular, the algorithms defined in this specification are intended to
     be easy to understand and are not intended to be performant. Implementers
     are encouraged to optimize.</p>
-  <h2 class="no-num heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
-  <h3 class="no-num heading settled" id="index-defined-here"><span class="content">Terms defined by this specification</span><a class="self-link" href="#index-defined-here"></a></h3>
+<script src="https://www.w3.org/scripts/TR/2016/fixup.js"></script>
+  <h2 class="no-num no-ref heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
+  <h3 class="no-num no-ref heading settled" id="index-defined-here"><span class="content">Terms defined by this specification</span><a class="self-link" href="#index-defined-here"></a></h3>
   <ul class="index">
    <li><a href="#conditionally-hsts-safe-origin">conditionally HSTS-safe</a><span>, in §2</span>
    <li><a href="#conditionally-hsts-safe-origin">conditionally HSTS-safe origin</a><span>, in §2</span>
@@ -2050,10 +2152,10 @@ Location: https://example.com/
    <li><a href="#upgrade-insecure-requests-http-request-header-field">Upgrade-Insecure-Requests HTTP request header
   field</a><span>, in §3.2.1</span>
   </ul>
-  <h3 class="no-num heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
+  <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
   <ul class="index">
    <li>
-    <a data-link-type="biblio" href="#biblio-csp">[CSP]</a> defines the following terms:
+    <a data-link-type="biblio">[CSP]</a> defines the following terms:
     <ul>
      <li><a href="https://www.w3.org/TR/CSP/#content-security-policy">content-security-policy</a>
      <li><a href="https://www.w3.org/TR/CSP/#content-security-policy-report-only">content-security-policy-report-only</a>
@@ -2068,12 +2170,12 @@ Location: https://example.com/
      <li><a href="https://www.w3.org/TR/CSP/#example-violation-report">violation report</a>
     </ul>
    <li>
-    <a data-link-type="biblio" href="#biblio-dom">[dom]</a> defines the following terms:
+    <a data-link-type="biblio">[WHATWG-DOM]</a> defines the following terms:
     <ul>
      <li><a href="http://www.w3.org/TR/dom/#interface-document">Document</a>
     </ul>
    <li>
-    <a data-link-type="biblio" href="#biblio-fetch">[FETCH]</a> defines the following terms:
+    <a data-link-type="biblio">[FETCH]</a> defines the following terms:
     <ul>
      <li><a href="https://fetch.spec.whatwg.org/#concept-header-list-append">append</a>
      <li><a href="https://fetch.spec.whatwg.org/#concept-request-client">client</a>
@@ -2085,7 +2187,7 @@ Location: https://example.com/
      <li><a href="https://fetch.spec.whatwg.org/#concept-request-url">url</a>
     </ul>
    <li>
-    <a data-link-type="biblio" href="#biblio-html5">[html5]</a> defines the following terms:
+    <a data-link-type="biblio">[html5]</a> defines the following terms:
     <ul>
      <li><a href="http://www.w3.org/TR/html5/browsers.html#browsing-context">browsing context</a>
      <li><a href="http://www.w3.org/TR/html5/browsers.html#create-a-document-object">creating a new document object</a>
@@ -2097,7 +2199,7 @@ Location: https://example.com/
      <li><a href="http://www.w3.org/TR/html5/webappapis.html#responsible-document">responsible document</a>
     </ul>
    <li>
-    <a data-link-type="biblio" href="#biblio-mix">[MIX]</a> defines the following terms:
+    <a data-link-type="biblio">[MIX]</a> defines the following terms:
     <ul>
      <li><a href="https://w3c.github.io/webappsec/specs/mixedcontent/#a-priori-insecure-url">a priori insecure</a>
      <li><a href="https://w3c.github.io/webappsec/specs/mixedcontent/#a-priori-insecure-url">a priori insecure origin</a>
@@ -2109,22 +2211,22 @@ Location: https://example.com/
      <li><a href="https://w3c.github.io/webappsec/specs/mixedcontent/#strict-mode">strict mode</a>
     </ul>
    <li>
-    <a data-link-type="biblio" href="#biblio-rfc5234">[rfc5234]</a> defines the following terms:
+    <a data-link-type="biblio">[ABNF]</a> defines the following terms:
     <ul>
      <li><a href="https://tools.ietf.org/html/rfc5234#appendix-B.1">wsp</a>
     </ul>
    <li>
-    <a data-link-type="biblio" href="#biblio-rfc6454">[rfc6454]</a> defines the following terms:
+    <a data-link-type="biblio">[rfc6454]</a> defines the following terms:
     <ul>
      <li><a href="https://tools.ietf.org/html/rfc6454#section-3.2">origin</a>
     </ul>
    <li>
-    <a data-link-type="biblio" href="#biblio-rfc6455">[rfc6455]</a> defines the following terms:
+    <a data-link-type="biblio">[RFC6455]</a> defines the following terms:
     <ul>
      <li><a href="https://tools.ietf.org/html/rfc6455#section-4.1">establish a websocket connection</a>
     </ul>
    <li>
-    <a data-link-type="biblio" href="#biblio-rfc6797">[rfc6797]</a> defines the following terms:
+    <a data-link-type="biblio">[RFC6797]</a> defines the following terms:
     <ul>
      <li><a href="https://tools.ietf.org/html/rfc6797#section-8.2">congruent match</a>
      <li><a href="https://tools.ietf.org/html/rfc6797#section-6.1.2">includesubdomains</a>
@@ -2134,24 +2236,24 @@ Location: https://example.com/
      <li><a href="https://tools.ietf.org/html/rfc6797#section-8.2">superdomain match</a>
     </ul>
    <li>
-    <a data-link-type="biblio" href="#biblio-rfc7231">[rfc7231]</a> defines the following terms:
+    <a data-link-type="biblio">[rfc7231]</a> defines the following terms:
     <ul>
      <li><a href="https://tools.ietf.org/html/rfc7231#section-3">resource representation</a>
      <li><a href="https://tools.ietf.org/html/rfc7231#section-7.1.4">vary</a>
     </ul>
    <li>
-    <a data-link-type="biblio" href="#biblio-rfc7234">[rfc7234]</a> defines the following terms:
+    <a data-link-type="biblio">[rfc7234]</a> defines the following terms:
     <ul>
      <li><a href="https://tools.ietf.org/html/rfc7234#section-5.2">cache-control</a>
      <li><a href="https://tools.ietf.org/html/rfc7234#section-5.2.2.3">no-store</a>
     </ul>
    <li>
-    <a data-link-type="biblio" href="#biblio-rfc7240">[rfc7240]</a> defines the following terms:
+    <a data-link-type="biblio">[rfc7240]</a> defines the following terms:
     <ul>
      <li><a href="https://tools.ietf.org/html/rfc7240#section-2">prefer</a>
     </ul>
    <li>
-    <a data-link-type="biblio" href="#biblio-url">[url]</a> defines the following terms:
+    <a data-link-type="biblio">[WHATWG-URL]</a> defines the following terms:
     <ul>
      <li><a href="http://www.w3.org/TR/url/#concept-url">URL</a>
      <li><a href="http://www.w3.org/TR/url/#concept-url-host">host</a>
@@ -2160,58 +2262,102 @@ Location: https://example.com/
      <li><a href="http://www.w3.org/TR/url/#concept-url-scheme">scheme</a>
     </ul>
    <li>
-    <a data-link-type="biblio" href="#biblio-workers">[WORKERS]</a> defines the following terms:
+    <a data-link-type="biblio">[WORKERS]</a> defines the following terms:
     <ul>
      <li><a href="http://www.w3.org/TR/workers/#worker">Worker</a>
      <li><a href="http://www.w3.org/TR/workers/#script-settings-for-workers">set up a worker environment settings object</a>
     </ul>
   </ul>
-  <h2 class="no-num heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
-  <h3 class="no-num heading settled" id="normative"><span class="content">Normative References</span><a class="self-link" href="#normative"></a></h3>
+  <h2 class="no-num no-ref heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
+  <h3 class="no-num no-ref heading settled" id="normative"><span class="content">Normative References</span><a class="self-link" href="#normative"></a></h3>
   <dl>
-   <dt id="biblio-abnf"><a class="self-link" href="#biblio-abnf"></a>[ABNF]
+   <dt id="biblio-abnf">[ABNF]
    <dd>D. Crocker, Ed.; P. Overell. <a href="https://tools.ietf.org/html/rfc5234">Augmented BNF for Syntax Specifications: ABNF</a>. January 2008. Internet Standard. URL: <a href="https://tools.ietf.org/html/rfc5234">https://tools.ietf.org/html/rfc5234</a>
-   <dt id="biblio-csp"><a class="self-link" href="#biblio-csp"></a>[CSP]
+   <dt id="biblio-csp">[CSP]
    <dd>Mike West; Adam Barth; Dan Veditz. <a href="https://www.w3.org/TR/CSP/">Content Security Policy</a>. CR. URL: <a href="https://www.w3.org/TR/CSP/">https://www.w3.org/TR/CSP/</a>
-   <dt id="biblio-fetch"><a class="self-link" href="#biblio-fetch"></a>[FETCH]
+   <dt id="biblio-fetch">[FETCH]
    <dd>Anne van Kesteren. <a href="https://fetch.spec.whatwg.org/">Fetch Standard</a>. Living Standard. URL: <a href="https://fetch.spec.whatwg.org/">https://fetch.spec.whatwg.org/</a>
-   <dt id="biblio-mix"><a class="self-link" href="#biblio-mix"></a>[MIX]
-   <dd>Mike West. <a href="http://www.w3.org/TR/mixed-content/">Mixed Content</a>. 8 October 2015. CR. URL: <a href="http://www.w3.org/TR/mixed-content/">http://www.w3.org/TR/mixed-content/</a>
-   <dt id="biblio-workers"><a class="self-link" href="#biblio-workers"></a>[WORKERS]
-   <dd>Ian Hickson. <a href="http://www.w3.org/TR/workers/">Web Workers</a>. WD. URL: <a href="http://www.w3.org/TR/workers/">http://www.w3.org/TR/workers/</a>
-   <dt id="biblio-dom"><a class="self-link" href="#biblio-dom"></a>[DOM]
-   <dd>Anne van Kesteren; et al. <a href="http://www.w3.org/TR/dom/">W3C DOM4</a>. 19 November 2015. REC. URL: <a href="http://www.w3.org/TR/dom/">http://www.w3.org/TR/dom/</a>
-   <dt id="biblio-html5"><a class="self-link" href="#biblio-html5"></a>[HTML5]
-   <dd>Ian Hickson; et al. <a href="http://www.w3.org/TR/html5/">HTML5</a>. 28 October 2014. REC. URL: <a href="http://www.w3.org/TR/html5/">http://www.w3.org/TR/html5/</a>
-   <dt id="biblio-rfc2119"><a class="self-link" href="#biblio-rfc2119"></a>[RFC2119]
+   <dt id="biblio-html5">[HTML5]
+   <dd>Ian Hickson; et al. <a href="http://www.w3.org/html/wg/drafts/html/master/">HTML5</a>. 28 October 2014. REC. URL: <a href="http://www.w3.org/html/wg/drafts/html/master/">http://www.w3.org/html/wg/drafts/html/master/</a>
+   <dt id="biblio-mix">[MIX]
+   <dd>Mike West. <a href="https://w3c.github.io/webappsec/specs/mixedcontent/">Mixed Content</a>. 8 October 2015. CR. URL: <a href="https://w3c.github.io/webappsec/specs/mixedcontent/">https://w3c.github.io/webappsec/specs/mixedcontent/</a>
+   <dt id="biblio-rfc2119">[RFC2119]
    <dd>S. Bradner. <a href="https://tools.ietf.org/html/rfc2119">Key words for use in RFCs to Indicate Requirement Levels</a>. March 1997. Best Current Practice. URL: <a href="https://tools.ietf.org/html/rfc2119">https://tools.ietf.org/html/rfc2119</a>
-   <dt id="biblio-rfc3864"><a class="self-link" href="#biblio-rfc3864"></a>[RFC3864]
+   <dt id="biblio-rfc3864">[RFC3864]
    <dd>G. Klyne; M. Nottingham; J. Mogul. <a href="https://tools.ietf.org/html/rfc3864">Registration Procedures for Message Header Fields</a>. September 2004. Best Current Practice. URL: <a href="https://tools.ietf.org/html/rfc3864">https://tools.ietf.org/html/rfc3864</a>
-   <dt id="biblio-rfc5234"><a class="self-link" href="#biblio-rfc5234"></a>[RFC5234]
-   <dd>D. Crocker, Ed.; P. Overell. <a href="https://tools.ietf.org/html/rfc5234">Augmented BNF for Syntax Specifications: ABNF</a>. January 2008. Internet Standard. URL: <a href="https://tools.ietf.org/html/rfc5234">https://tools.ietf.org/html/rfc5234</a>
-   <dt id="biblio-rfc6454"><a class="self-link" href="#biblio-rfc6454"></a>[RFC6454]
+   <dt id="biblio-rfc6454">[RFC6454]
    <dd>A. Barth. <a href="https://tools.ietf.org/html/rfc6454">The Web Origin Concept</a>. December 2011. Proposed Standard. URL: <a href="https://tools.ietf.org/html/rfc6454">https://tools.ietf.org/html/rfc6454</a>
-   <dt id="biblio-rfc6455"><a class="self-link" href="#biblio-rfc6455"></a>[RFC6455]
+   <dt id="biblio-rfc6455">[RFC6455]
    <dd>I. Fette; A. Melnikov. <a href="https://tools.ietf.org/html/rfc6455">The WebSocket Protocol</a>. December 2011. Proposed Standard. URL: <a href="https://tools.ietf.org/html/rfc6455">https://tools.ietf.org/html/rfc6455</a>
-   <dt id="biblio-rfc6797"><a class="self-link" href="#biblio-rfc6797"></a>[RFC6797]
+   <dt id="biblio-rfc6797">[RFC6797]
    <dd>J. Hodges; C. Jackson; A. Barth. <a href="https://tools.ietf.org/html/rfc6797">HTTP Strict Transport Security (HSTS)</a>. November 2012. Proposed Standard. URL: <a href="https://tools.ietf.org/html/rfc6797">https://tools.ietf.org/html/rfc6797</a>
-   <dt id="biblio-rfc7231"><a class="self-link" href="#biblio-rfc7231"></a>[RFC7231]
+   <dt id="biblio-rfc7231">[RFC7231]
    <dd>R. Fielding, Ed.; J. Reschke, Ed.. <a href="https://tools.ietf.org/html/rfc7231">Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content</a>. June 2014. Proposed Standard. URL: <a href="https://tools.ietf.org/html/rfc7231">https://tools.ietf.org/html/rfc7231</a>
-   <dt id="biblio-rfc7234"><a class="self-link" href="#biblio-rfc7234"></a>[RFC7234]
-   <dd>R. Fielding, Ed.; M. Nottingham, Ed.; J. Reschke, Ed.. <a href="https://tools.ietf.org/html/rfc7234">Hypertext Transfer Protocol (HTTP/1.1): Caching</a>. June 2014. Proposed Standard. URL: <a href="https://tools.ietf.org/html/rfc7234">https://tools.ietf.org/html/rfc7234</a>
-   <dt id="biblio-rfc7240"><a class="self-link" href="#biblio-rfc7240"></a>[RFC7240]
-   <dd>J. Snell. <a href="https://tools.ietf.org/html/rfc7240">Prefer Header for HTTP</a>. June 2014. Proposed Standard. URL: <a href="https://tools.ietf.org/html/rfc7240">https://tools.ietf.org/html/rfc7240</a>
-   <dt id="biblio-rfc7762"><a class="self-link" href="#biblio-rfc7762"></a>[RFC7762]
+   <dt id="biblio-rfc7762">[RFC7762]
    <dd>M. West. <a href="https://tools.ietf.org/html/rfc7762">Initial Assignment for the Content Security Policy Directives Registry</a>. January 2016. Informational. URL: <a href="https://tools.ietf.org/html/rfc7762">https://tools.ietf.org/html/rfc7762</a>
-   <dt id="biblio-url"><a class="self-link" href="#biblio-url"></a>[URL]
-   <dd>Anne van Kesteren; Sam Ruby. <a href="http://www.w3.org/TR/url-1/">URL</a>. 9 December 2014. WD. URL: <a href="http://www.w3.org/TR/url-1/">http://www.w3.org/TR/url-1/</a>
+   <dt id="biblio-whatwg-dom">[WHATWG-DOM]
+   <dd>Anne van Kesteren. <a href="https://dom.spec.whatwg.org/">DOM Standard</a>. Living Standard. URL: <a href="https://dom.spec.whatwg.org/">https://dom.spec.whatwg.org/</a>
+   <dt id="biblio-whatwg-url">[WHATWG-URL]
+   <dd>Anne van Kesteren; Sam Ruby. <a href="https://url.spec.whatwg.org/">URL Standard</a>. Living Standard. URL: <a href="https://url.spec.whatwg.org/">https://url.spec.whatwg.org/</a>
+   <dt id="biblio-workers">[WORKERS]
+   <dd>Ian Hickson. <a href="http://www.w3.org/TR/workers/">Web Workers</a>. WD. URL: <a href="http://www.w3.org/TR/workers/">http://www.w3.org/TR/workers/</a>
   </dl>
-  <h3 class="no-num heading settled" id="informative"><span class="content">Informative References</span><a class="self-link" href="#informative"></a></h3>
+  <h3 class="no-num no-ref heading settled" id="informative"><span class="content">Informative References</span><a class="self-link" href="#informative"></a></h3>
   <dl>
-   <dt id="biblio-bbc-archive"><a class="self-link" href="#biblio-bbc-archive"></a>[BBC-ARCHIVE]
+   <dt id="biblio-bbc-archive">[BBC-ARCHIVE]
    <dd>Neil McIntosh. <a href="http://www.bbc.co.uk/blogs/internet/entries/f7126d19-2afa-3231-9c4e-0f7198c468ab">Labelling BBC Online's archived websites</a>. URL: <a href="http://www.bbc.co.uk/blogs/internet/entries/f7126d19-2afa-3231-9c4e-0f7198c468ab">http://www.bbc.co.uk/blogs/internet/entries/f7126d19-2afa-3231-9c4e-0f7198c468ab</a>
-   <dt id="biblio-nyt-https"><a class="self-link" href="#biblio-nyt-https"></a>[NYT-HTTPS]
+   <dt id="biblio-nyt-https">[NYT-HTTPS]
    <dd>Eitan Konigsburg; Rajiv Pant; Elena Kvochko. <a href="http://open.blogs.nytimes.com/2014/11/1%33/embracing-https/">Embracing HTTPS</a>. URL: <a href="http://open.blogs.nytimes.com/2014/11/1%33/embracing-https/">http://open.blogs.nytimes.com/2014/11/1%33/embracing-https/</a>
-   <dt id="biblio-web-https"><a class="self-link" href="#biblio-web-https"></a>[WEB-HTTPS]
+   <dt id="biblio-rfc7234">[RFC7234]
+   <dd>R. Fielding, Ed.; M. Nottingham, Ed.; J. Reschke, Ed.. <a href="https://tools.ietf.org/html/rfc7234">Hypertext Transfer Protocol (HTTP/1.1): Caching</a>. June 2014. Proposed Standard. URL: <a href="https://tools.ietf.org/html/rfc7234">https://tools.ietf.org/html/rfc7234</a>
+   <dt id="biblio-rfc7240">[RFC7240]
+   <dd>J. Snell. <a href="https://tools.ietf.org/html/rfc7240">Prefer Header for HTTP</a>. June 2014. Proposed Standard. URL: <a href="https://tools.ietf.org/html/rfc7240">https://tools.ietf.org/html/rfc7240</a>
+   <dt id="biblio-web-https">[WEB-HTTPS]
    <dd>Mark Nottingham. <a href="http://www.w3.org/2001/tag/doc/web-https">Securing the Web</a>. TAG Finding. URL: <a href="http://www.w3.org/2001/tag/doc/web-https">http://www.w3.org/2001/tag/doc/web-https</a>
   </dl>
+<script>/* script-dfn-panel */
+
+        document.body.addEventListener("click", function(e) {
+            var queryAll = function(sel) { return [].slice.call(document.querySelectorAll(sel)); }
+            // Find the dfn element or panel, if any, that was clicked on.
+            var el = e.target;
+            var target;
+            while(el.parentElement) {
+                if(el.tagName == "A") {
+                    // Clicked on a link; intercept this early in case it was nested in a <dfn>
+                    return true;
+                }
+                if(el.tagName == "DFN") {
+                    target = "dfn";
+                    break;
+                }
+                if(/H\d/.test(el.tagName) && el.getAttribute('data-dfn-type') != null) {
+                    target = "dfn";
+                    break;
+                }
+                if(el.classList.contains("dfn-panel")) {
+                    target = "dfn-panel";
+                    break;
+                }
+                el = el.parentElement;
+            }
+            if(target != "dfn-panel") {
+                // Turn off any currently "on" or "activated" panels.
+                queryAll(".dfn-panel.on, .dfn-panel.activated").forEach(function(el){
+                    el.classList.remove("on");
+                    el.classList.remove("activated");
+                });
+            }
+            if(target == "dfn") {
+                // open the panel
+                var dfnPanel = el.querySelector(".dfn-panel");
+                if(dfnPanel) {
+                    dfnPanel.classList.add("on");
+                }
+            } else if(target == "dfn-panel") {
+                // Switch it to "activated" state, which pins it.
+                el.classList.add("activated");
+            }
+
+        });
+        </script>
