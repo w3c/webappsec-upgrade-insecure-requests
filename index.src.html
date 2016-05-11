@@ -9,8 +9,8 @@ Shortname: upgrade-insecure-requests
 Editor: Mike West 56384, Google Inc., mkwst@google.com
 Abstract:
   This document defines a mechanism which allows authors to instruct a user
-  agent to upgrade <i lang="la">a priori</i> insecure resource requests to
-  secure transport before fetching them.
+  agent to upgrade insecure resource requests to secure transport before
+  fetching them.
 Indent: 2
 Level: None
 Version History: https://github.com/w3c/webappsec-upgrade-insecure-requests/commits/master/index.src.html
@@ -68,14 +68,9 @@ spec: MIX; urlPrefix: https://w3c.github.io/webappsec/specs/mixedcontent/
     text: embedding document
     text: strict mode
     text: block-all-mixed-content
-    url: a-priori-insecure-url
-      text: a priori insecure origin
-      text: a priori insecure url
-      text: a priori insecure
-    url: potentially-secure-origin
-      text: potentially secure origin
-      text: potentially secure url
-      text: potentially secure
+    url: a-priori-authenticated-url
+      text: a priori authenticated
+      text: a priori authenticated url
 spec: SERVICE-WORKERS; urlPrefix: https://slightlyoff.github.io/ServiceWorker/spec/service_worker/
   type: interface
     text: ServiceWorker; url: service-worker-interface
@@ -205,8 +200,8 @@ spec: RFC7240; urlPrefix: https://tools.ietf.org/html/rfc7240
   <h3 id="goals">Goals</h3>
 
   The overarching goal is to reduce the burden of migrating websites from
-  <a><i lang="la">a priori</i> insecure origins</a> by reducing the negative
-  side effects of mixed content blocking [[MIX]].
+  insecure origins by reducing the negative side effects of mixed content
+  blocking [[MIX]].
 
   If we assume that authors do the server-side legwork (obtaining a certificate,
   configuring the server, setting up redirects), and that authors also ensure
@@ -353,9 +348,9 @@ spec: RFC7240; urlPrefix: https://tools.ietf.org/html/rfc7240
 
   <ol>
     <li>
-      Redirect <a><i lang="la">a priori</i> insecure</a>, <a>safely upgradable
-      requests</a> from HTTP to HTTPS by responding with a <code>Location</code>
-      header and a <code>307</code> status code.
+      Redirect insecure, <a>safely upgradable requests</a> from HTTP to HTTPS by
+      responding with a <code>Location</code> header and a <code>307</code>
+      status code.
 
       <div class="example">
         In Nginx, this kind of redirection might look like this:
@@ -374,9 +369,9 @@ spec: RFC7240; urlPrefix: https://tools.ietf.org/html/rfc7240
       </div>
     </li>
     <li>
-      Respond to <a>potentially secure</a> <a>safely upgradable requests</a>
-      with a <code><a>upgrade-insecure-requests</a></code> directive if
-      necessary for the resource being requested.
+      Respond to <a><i lang="la">a priori</i> authenticated</a> <a>safely
+      upgradable requests</a> with a <code><a>upgrade-insecure-requests</a></code>
+      directive if necessary for the resource being requested.
 
       <div class="example">
         In Nginx, adding this directive might look like this:
@@ -528,9 +523,9 @@ spec: RFC7240; urlPrefix: https://tools.ietf.org/html/rfc7240
   <h2 id="upgrading">Upgrading Insecure Resource Requests</h2>
 
   In order to allow authors to mitigate the negative side-effects of migration
-  away from <a><i lang="la">a priori</i> insecure origins</a>, authors may
-  instruct the user agent to transparently upgrade resource requests to
-  <a>potentially secure</a> variants of the original request's URL.
+  away from insecure origins, authors may instruct the user agent to
+  transparently upgrade resource requests to <a><i lang="la">a priori</i>
+  authenticated</a> variants of the original request's URL.
 
   To support this instruction:
 
@@ -663,16 +658,16 @@ spec: RFC7240; urlPrefix: https://tools.ietf.org/html/rfc7240
   <ol>
     <li>
       User agents MUST send an <a><code>Upgrade-Insecure-Requests</code> header
-      field</a> along with <a>request</a>s for <a><i lang="la">a priori</i>
-      insecure URLs</a>.
+      field</a> along with <a>request</a>s for insecure URLs.
 
       Note: Servers can use this signal to upgrade HTTP requests to HTTPS for
       pages that require <code><a>upgrade-insecure-requests</a></code> support.
     </li>
     <li>
       User agents MUST send an <a><code>Upgrade-Insecure-Requests</code> header
-      field</a> along with <a>request</a>s for <a>potentially secure URLs</a> whose
-      <a for="request" attribute>url</a>'s {{URL/host}} is <em>not</em> a <a>preloadable HSTS host</a>.
+      field</a> along with <a>request</a>s for <a><i lang="la">a priori</i>
+      authenticated URLs</a> whose <a for="request" attribute>url</a>'s
+      {{URL/host}} is <em>not</em> a <a>preloadable HSTS host</a>.
 
       Note: Servers can use the absence of this signal to downgrade HTTPS
       requests to HTTP for pages that require
@@ -681,11 +676,12 @@ spec: RFC7240; urlPrefix: https://tools.ietf.org/html/rfc7240
     <li>
       User agents SHOULD periodically send an
       <a><code>Upgrade-Insecure-Requests</code> header field</a> along with
-      <a>request</a>s for <a>potentially secure URLs</a> whose <a for="request" attribute>url</a>'s
-      {{URL/host}} <em>is</em> a <a>preloadable HSTS host</a>. For example, user
-      agents could send an <a><code>Upgrade-Insecure-Requests</code> header
-      field</a> only when the asserted <code>max-age</code> is a few days from
-      expiration, or only for a small percentage of requests.
+      <a>request</a>s for <a><i lang="la">a priori</i> authenticated URLs</a>
+      whose <a for="request" attribute>url</a>'s {{URL/host}} <em>is</em> a
+      <a>preloadable HSTS host</a>. For example, user agents could send an
+      <a><code>Upgrade-Insecure-Requests</code> header field</a> only when
+      the asserted <code>max-age</code> is a few days from expiration, or
+      only for a small percentage of requests.
 
       Note: <a>preloadable HSTS hosts</a> have asserted that they are
       <a>HSTS-safe</a>, and therefore don't need a downgrade signal. They will
@@ -696,8 +692,8 @@ spec: RFC7240; urlPrefix: https://tools.ietf.org/html/rfc7240
   </ol>
 
   When a server encounters this preference in an HTTP request's headers, it
-  SHOULD redirect the user to a <a>potentially secure</a> representation of the
-  resource being requested.
+  SHOULD redirect the user to a <a><i lang="la">a priori</i> authenticated</a>
+  representation of the resource being requested.
  
   When a server encounters this preference in an HTTPS request's headers,
   it SHOULD include a <code><a>Strict-Transport-Security</a></code> header in
@@ -872,7 +868,7 @@ spec: RFC7240; urlPrefix: https://tools.ietf.org/html/rfc7240
   <h2 id="algorithms">Processing Algorithms</h2>
 
   <h3 id="upgrade-request">
-    Upgrade <var>request</var> to a potentially secure URL, if appropriate
+    Upgrade <var>request</var> to an <i lang="la">a priori</i> authenticated URL, if appropriate
   </h3>
 
   Given a <a>request</a> <var>request</var>, this algorithm will rewrite its
@@ -898,12 +894,12 @@ spec: RFC7240; urlPrefix: https://tools.ietf.org/html/rfc7240
 
       <ol>
         <li>
-          <var>request</var>'s <a for="request" attribute>url</a> is <a><i lang="la">a priori</i>
-          insecure</a>
+          <var>request</var>'s <a for="request" attribute>url</a> is not
+          <a><i lang="la">a priori</i> authenticated</a>
         </li>
         <li>
-          <var>request</var>'s <a for="request" attribute>url</a>'s {{URL/host}} is <em>not</em> a
-          <a>preloadable HSTS host</a>
+          <var>request</var>'s <a for="request" attribute>url</a>'s {{URL/host}}
+          is <em>not</em> a <a>preloadable HSTS host</a>
         </li>
       </ol>
 
@@ -988,11 +984,10 @@ spec: RFC7240; urlPrefix: https://tools.ietf.org/html/rfc7240
 
   Given an <a>request</a>'s <a for="request" attribute>client</a>
   <var>client</var> (an <a>environment settings object</a>), this algorithm
-  returns <code>Enforced Upgrade</code> if <a><i lang="la">a priori</i>
-  insecure</a> requests associated with that client should be upgraded, or
-  <a value>Do Not Upgrade</a> otherwise. In short, this will check the client
-  and return the appropriate <a>insecure requests policy</a> set on it or its
-  <a>browsing context</a>.
+  returns <code>Enforced Upgrade</code> if insecure requests associated with
+  that client should be upgraded, or <a value>Do Not Upgrade</a> otherwise. In
+  short, this will check the client and return the appropriate <a>insecure
+  requests policy</a> set on it or its <a>browsing context</a>.
 
   <ol>
     <li>
@@ -1128,12 +1123,12 @@ spec: RFC7240; urlPrefix: https://tools.ietf.org/html/rfc7240
 
   Legacy clients which do support mixed content blocking [[MIX]], but do not
   support the <code><a>upgrade-insecure-requests</a></code> directive will
-  continue to have a suboptimal experience on pages containing
-  <a><i lang="la">a priori</i> insecure URLs</a>. Authors SHOULD ensure that
-  they collect <a lt="send violation reports">violation reports</a> in order
-  to determine which resources are most problematic for their users, and SHOULD
-  use that information to prioritize fixes for URLs in legacy content that
-  users will most likely request.
+  continue to have a suboptimal experience on pages containing insecure URLs.
+  Authors SHOULD ensure that they collect
+  <a lt="send violation reports">violation reports</a> in order to determine
+  which resources are most problematic for their users, and SHOULD use that
+  information to prioritize fixes for URLs in legacy content that users will
+  most likely request.
 
   <h3 id="relation-to-hsts">Relation to HSTS</h3>
 
