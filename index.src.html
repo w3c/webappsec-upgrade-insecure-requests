@@ -49,6 +49,7 @@ spec: FETCH; urlPrefix: https://fetch.spec.whatwg.org/
     text: url; for: request; url: concept-request-url
     text: client; for: request; url: concept-request-client
     text: header-list; for: request; url: concept-request-header-list
+    text: target browsing context; for: request; url: concept-request-target-browsing-context
 spec: HTML5; urlPrefix: http://www.w3.org/TR/html5/
   type: dfn
     urlPrefix: browsers.html
@@ -578,7 +579,7 @@ spec: RFC7240; urlPrefix: https://tools.ietf.org/html/rfc7240
       settings object</a>.
     </li>
     <li>
-      Set <var>setting</var>'s <a>insecure requests policy</a> to
+      Set <var>settings</var>'s <a>insecure requests policy</a> to
       <a value>Upgrade</a>.
     </li>
     <li>
@@ -885,7 +886,7 @@ spec: RFC7240; urlPrefix: https://tools.ietf.org/html/rfc7240
   exception of form submissions. Form submissions will be upgraded to mitigate
   the risk of data leakage via plaintext submissions.
 
-  Note: This algorithm is called as step #3 of the <a>Main Fetch</a> algorithm.
+  Note: This algorithm is called at the top of the <a>Main Fetch</a> algorithm.
 
   <ol>
     <li>
@@ -919,6 +920,11 @@ spec: RFC7240; urlPrefix: https://tools.ietf.org/html/rfc7240
           substeps, and continue upgrading <var>request</var>.
         </li>
         <li>
+          If <var>request</var>'s <a for="request" attribute>target browsing context</a>
+          is a <a>nested browsing context</a>, skip the remaining substeps
+          and continue upgrading <var>request</var>.
+        </li>
+        <li>
           Let <var>tuple</var> be a tuple of <var>request</var>'s
           <a for="request" attribute>url</a>'s {{URL/host}} and {{URL/port}}.
         </li>
@@ -927,17 +933,20 @@ spec: RFC7240; urlPrefix: https://tools.ietf.org/html/rfc7240
           <a>upgrade insecure navigations set</a>, then skip the remaining
           substeps, and continue upgrading <var>request</var>.
 
-          Note: We only upgrade top-level <a>navigation requests</a> for hosts
-          that have explicitly opted-into the behavior for a particular
-          <a>protected resource</a>, as described in [[#examples]]. Performing
-          upgrades for navigations to third-party resources brings a
-          significantly higher potential for breakage, so we're avoiding it for
-          the moment.
         </li>
         <li>
           Return without further modifying <var>request</var>.
         </li>
       </ol>
+
+      Note: We only upgrade top-level <a>navigation requests</a> for hosts
+      that have explicitly opted-into the behavior for a particular
+      <a>protected resource</a>, as described in [[#examples]]. Performing
+      upgrades for top-level navigations to third-party resources brings a
+      significantly higher potential for breakage, so we're avoiding it for
+      the moment. Nested navigations (via <{iframe}>, for example) affect
+      the security status of their embedder, so we ensure that they are
+      upgraded if necessary.
     </li>
     <li>
       Let <var>upgrade state</var> be the result of executing

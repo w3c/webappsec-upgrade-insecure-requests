@@ -1738,7 +1738,7 @@ directive-value = ""
     <ol>
      <li> Let <var>settings</var> be the <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#protected-resource">protected resource</a>’s <a data-link-type="dfn" href="http://www.w3.org/TR/html5/webappapis.html#incumbent-settings-object">incumbent
       settings object</a>. 
-     <li> Set <var>setting</var>’s <a data-link-type="dfn" href="#insecure-requests-policy" id="ref-for-insecure-requests-policy-1">insecure requests policy</a> to <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-upgrade" id="ref-for-valdef-insecure-requests-policy-upgrade-1">Upgrade</a>. 
+     <li> Set <var>settings</var>’s <a data-link-type="dfn" href="#insecure-requests-policy" id="ref-for-insecure-requests-policy-1">insecure requests policy</a> to <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-upgrade" id="ref-for-valdef-insecure-requests-policy-upgrade-1">Upgrade</a>. 
      <li> Let <var>tuple</var> be a tuple of the <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#protected-resource">protected resource</a>’s <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url">URL</a></code>'s <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-host">host</a></code> and <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-port">port</a></code>. 
      <li> Insert <var>tuple</var> into <var>settings</var>’s <a data-link-type="dfn" href="#upgrade-insecure-navigations-set" id="ref-for-upgrade-insecure-navigations-set-1">upgrade insecure
       navigations set</a>. 
@@ -1916,7 +1916,7 @@ Location: https://example.com/
     <p>We will not upgrade cross-origin <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#navigation-request">navigation requests</a>, with the
   exception of form submissions. Form submissions will be upgraded to mitigate
   the risk of data leakage via plaintext submissions.</p>
-    <p class="note" role="note">Note: This algorithm is called as step #3 of the <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#main-fetch">Main Fetch</a> algorithm.</p>
+    <p class="note" role="note">Note: This algorithm is called at the top of the <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#main-fetch">Main Fetch</a> algorithm.</p>
     <ol>
      <li>
        If <var>request</var> is a <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#navigation-request">navigation request</a>, <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-header-list-append">append</a> a
@@ -1933,17 +1933,20 @@ Location: https://example.com/
       <ol>
        <li> If <var>request</var> is a form submission, skip the remaining
           substeps, and continue upgrading <var>request</var>. 
+       <li> If <var>request</var>’s <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-target-browsing-context">target browsing context</a> is a <a data-link-type="dfn" href="http://www.w3.org/TR/html5/browsers.html#nested-browsing-context">nested browsing context</a>, skip the remaining substeps
+          and continue upgrading <var>request</var>. 
        <li> Let <var>tuple</var> be a tuple of <var>request</var>’s <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-url">url</a>’s <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-host">host</a></code> and <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-port">port</a></code>. 
-       <li>
-         If <var>tuple</var> is contained in <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-client">client</a>’s <a data-link-type="dfn" href="#upgrade-insecure-navigations-set" id="ref-for-upgrade-insecure-navigations-set-8">upgrade insecure navigations set</a>, then skip the remaining
+       <li> If <var>tuple</var> is contained in <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-client">client</a>’s <a data-link-type="dfn" href="#upgrade-insecure-navigations-set" id="ref-for-upgrade-insecure-navigations-set-8">upgrade insecure navigations set</a>, then skip the remaining
           substeps, and continue upgrading <var>request</var>. 
-        <p class="note" role="note">Note: We only upgrade top-level <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#navigation-request">navigation requests</a> for hosts
-          that have explicitly opted-into the behavior for a particular <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#protected-resource">protected resource</a>, as described in <a href="#examples">§1.2 Examples</a>. Performing
-          upgrades for navigations to third-party resources brings a
-          significantly higher potential for breakage, so we’re avoiding it for
-          the moment.</p>
        <li> Return without further modifying <var>request</var>. 
       </ol>
+      <p class="note" role="note">Note: We only upgrade top-level <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#navigation-request">navigation requests</a> for hosts
+      that have explicitly opted-into the behavior for a particular <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#protected-resource">protected resource</a>, as described in <a href="#examples">§1.2 Examples</a>. Performing
+      upgrades for top-level navigations to third-party resources brings a
+      significantly higher potential for breakage, so we’re avoiding it for
+      the moment. Nested navigations (via <code><a data-link-type="element" href="https://html.spec.whatwg.org/multipage/embedded-content.html#the-iframe-element">iframe</a></code>, for example) affect
+      the security status of their embedder, so we ensure that they are
+      upgraded if necessary.</p>
      <li> Let <var>upgrade state</var> be the result of executing <a href="#should-upgrade-for-client">§4.2 Should insecure requests be upgraded for client?</a> upon <var>request</var>’s <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-client">client</a>. 
      <li> If <var>upgrade state</var> is <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-do-not-upgrade" id="ref-for-valdef-insecure-requests-policy-do-not-upgrade-2">Do Not Upgrade</a>, return without
       modifying <var>request</var>. 
@@ -2184,6 +2187,7 @@ Location: https://example.com/
      <li><a href="https://fetch.spec.whatwg.org/#main-fetch">main fetch</a>
      <li><a href="https://fetch.spec.whatwg.org/#navigation-request">navigation request</a>
      <li><a href="https://fetch.spec.whatwg.org/#concept-request">request</a>
+     <li><a href="https://fetch.spec.whatwg.org/#concept-request-target-browsing-context">target browsing context</a>
      <li><a href="https://fetch.spec.whatwg.org/#concept-request-url">url</a>
     </ul>
    <li>
@@ -2267,6 +2271,11 @@ Location: https://example.com/
      <li><a href="http://www.w3.org/TR/workers/#worker">Worker</a>
      <li><a href="http://www.w3.org/TR/workers/#script-settings-for-workers">set up a worker environment settings object</a>
     </ul>
+   <li>
+    <a data-link-type="biblio">[HTML]</a> defines the following terms:
+    <ul>
+     <li><a href="https://html.spec.whatwg.org/multipage/embedded-content.html#the-iframe-element">iframe</a>
+    </ul>
   </ul>
   <h2 class="no-num no-ref heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
   <h3 class="no-num no-ref heading settled" id="normative"><span class="content">Normative References</span><a class="self-link" href="#normative"></a></h3>
@@ -2306,6 +2315,8 @@ Location: https://example.com/
   <dl>
    <dt id="biblio-bbc-archive">[BBC-ARCHIVE]
    <dd>Neil McIntosh. <a href="http://www.bbc.co.uk/blogs/internet/entries/f7126d19-2afa-3231-9c4e-0f7198c468ab">Labelling BBC Online's archived websites</a>. URL: <a href="http://www.bbc.co.uk/blogs/internet/entries/f7126d19-2afa-3231-9c4e-0f7198c468ab">http://www.bbc.co.uk/blogs/internet/entries/f7126d19-2afa-3231-9c4e-0f7198c468ab</a>
+   <dt id="biblio-html">[HTML]
+   <dd>Ian Hickson. <a href="https://html.spec.whatwg.org/multipage/">HTML Standard</a>. Living Standard. URL: <a href="https://html.spec.whatwg.org/multipage/">https://html.spec.whatwg.org/multipage/</a>
    <dt id="biblio-nyt-https">[NYT-HTTPS]
    <dd>Eitan Konigsburg; Rajiv Pant; Elena Kvochko. <a href="http://open.blogs.nytimes.com/2014/11/1%33/embracing-https/">Embracing HTTPS</a>. URL: <a href="http://open.blogs.nytimes.com/2014/11/1%33/embracing-https/">http://open.blogs.nytimes.com/2014/11/1%33/embracing-https/</a>
    <dt id="biblio-rfc7234">[RFC7234]
