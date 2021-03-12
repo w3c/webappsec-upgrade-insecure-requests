@@ -50,7 +50,7 @@ spec: FETCH; urlPrefix: https://fetch.spec.whatwg.org/
     text: client; for: request; url: concept-request-client
     text: header-list; for: request; url: concept-request-header-list
     text: target browsing context; for: request; url: concept-request-target-browsing-context
-spec: HTML5; urlPrefix: http://www.w3.org/TR/html5/
+spec: HTML; urlPrefix: https://html.spec.whatwg.org/multipage/
   type: dfn
     urlPrefix: browsers.html
       text: ancestor browsing context
