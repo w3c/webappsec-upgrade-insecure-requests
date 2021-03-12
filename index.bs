@@ -13,7 +13,7 @@ Abstract:
   fetching them.
 Indent: 2
 Level: None
-Version History: https://github.com/w3c/webappsec-upgrade-insecure-requests/commits/master/index.src.html
+Version History: https://github.com/w3c/webappsec-upgrade-insecure-requests/commits/main/index.bs
 Boilerplate: omit conformance, omit feedback-header
 !Participate: <a href="https://github.com/w3c/webappsec-upgrade-insecure-requests/issues/new">File an issue</a> (<a href="https://github.com/w3c/webappsec-upgrade-insecure-requests/issues">open issues</a>)
 </pre>
