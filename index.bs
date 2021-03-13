@@ -4,7 +4,7 @@ Status: ED
 Group: WebAppSec
 ED: https://w3c.github.io/webappsec-upgrade-insecure-requests/
 TR: http://www.w3.org/TR/upgrade-insecure-requests/
-Previous Version: http://www.w3.org/TR/2015/WD-upgrade-insecure-requests-20150226/
+Previous Version: from biblio
 Shortname: upgrade-insecure-requests
 Editor: Mike West 56384, Google Inc., mkwst@google.com
 Abstract:
