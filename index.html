@@ -6,7 +6,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2016/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version b94c7e755, updated Fri Feb 19 16:28:59 2021 -0800" name="generator">
   <link href="http://www.w3.org/TR/upgrade-insecure-requests/" rel="canonical">
-  <meta content="46bf44fe2ad47c602196d83fce5bd9576a3fc51d" name="document-revision">
+  <meta content="6fabd5bd2f132ea04be1199bc0cedeb3b797080a" name="document-revision">
 <style>/* style-autolinks */
 
 .css.css, .property.property, .descriptor.descriptor {
@@ -497,7 +497,7 @@ dfn > a.self-link::before      { content: "#"; }
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" width="72"> </a> </p>
    <h1>Upgrade Insecure Requests</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2021-03-13">13 March 2021</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2021-03-15">15 March 2021</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -586,30 +586,29 @@ dfn > a.self-link::before      { content: "#"; }
     <li>
      <a href="#algorithms"><span class="secno">4</span> <span class="content">Processing Algorithms</span></a>
      <ol class="toc">
-      <li><a href="#upgrade-request"><span class="secno">4.1</span> <span class="content"> Upgrade <var>request</var> to an <i lang="la">a priori</i> authenticated URL, if appropriate </span></a>
+      <li><a href="#upgrade-request"><span class="secno">4.1</span> <span class="content"> Upgrade <var>request</var> to a <span>potentially trustworthy URL</span>, if appropriate </span></a>
       <li><a href="#should-upgrade-for-client"><span class="secno">4.2</span> <span class="content"> Should insecure <span>request</span>s be upgraded for <var>client</var>? </span></a>
      </ol>
-    <li><a href="#websockets-integration"><span class="secno">5</span> <span class="content">Modifications to WebSockets</span></a>
     <li>
-     <a href="#security"><span class="secno">6</span> <span class="content">Security Considerations</span></a>
+     <a href="#security"><span class="secno">5</span> <span class="content">Security Considerations</span></a>
      <ol class="toc">
-      <li><a href="#hsts"><span class="secno">6.1</span> <span class="content">Interaction with HSTS</span></a>
-      <li><a href="#violation-report-target"><span class="secno">6.2</span> <span class="content">CSP Violation Reports</span></a>
+      <li><a href="#hsts"><span class="secno">5.1</span> <span class="content">Interaction with HSTS</span></a>
+      <li><a href="#violation-report-target"><span class="secno">5.2</span> <span class="content">CSP Violation Reports</span></a>
      </ol>
-    <li><a href="#performance"><span class="secno">7</span> <span class="content">Performance Considerations</span></a>
+    <li><a href="#performance"><span class="secno">6</span> <span class="content">Performance Considerations</span></a>
     <li>
-     <a href="#authoring"><span class="secno">8</span> <span class="content">Authoring Considerations</span></a>
+     <a href="#authoring"><span class="secno">7</span> <span class="content">Authoring Considerations</span></a>
      <ol class="toc">
-      <li><a href="#legacy-clients"><span class="secno">8.1</span> <span class="content">Legacy Clients</span></a>
-      <li><a href="#relation-to-hsts"><span class="secno">8.2</span> <span class="content">Relation to HSTS</span></a>
+      <li><a href="#legacy-clients"><span class="secno">7.1</span> <span class="content">Legacy Clients</span></a>
+      <li><a href="#relation-to-hsts"><span class="secno">7.2</span> <span class="content">Relation to HSTS</span></a>
      </ol>
     <li>
-     <a href="#iana-considerations"><span class="secno">9</span> <span class="content">IANA Considerations</span></a>
+     <a href="#iana-considerations"><span class="secno">8</span> <span class="content">IANA Considerations</span></a>
      <ol class="toc">
-      <li><a href="#iana-https"><span class="secno">9.1</span> <span class="content"> Upgrade-Insecure-Requests Header </span></a>
-      <li><a href="#iana-directive"><span class="secno">9.2</span> <span class="content"> Upgrade-Insecure-Requests Directive </span></a>
+      <li><a href="#iana-https"><span class="secno">8.1</span> <span class="content"> Upgrade-Insecure-Requests Header </span></a>
+      <li><a href="#iana-directive"><span class="secno">8.2</span> <span class="content"> Upgrade-Insecure-Requests Directive </span></a>
      </ol>
-    <li><a href="#acknowledgements"><span class="secno">10</span> <span class="content">Acknowledgements</span></a>
+    <li><a href="#acknowledgements"><span class="secno">9</span> <span class="content">Acknowledgements</span></a>
     <li>
      <a href="#conformance"><span class="secno"></span> <span class="content">Conformance</span></a>
      <ol class="toc">
@@ -660,7 +659,7 @@ dfn > a.self-link::before      { content: "#"; }
   blocking <a data-link-type="biblio" href="#biblio-mix">[MIX]</a>.</p>
     <p>If we assume that authors do the server-side legwork (obtaining a certificate,
   configuring the server, setting up redirects), and that authors also ensure
-  that both first- and third-party content is accessible at <em>the same <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-host" id="ref-for-concept-url-host">host</a></code> and <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-path" id="ref-for-concept-url-path">path</a></code></em> on a secure <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-scheme" id="ref-for-concept-url-scheme">scheme</a></code>, then the
+  that both first- and third-party content is accessible at <em>the same <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-host" id="ref-for-concept-url-host">host</a> and <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-path" id="ref-for-concept-url-path">path</a></em> on a secure <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-scheme" id="ref-for-concept-url-scheme">scheme</a>, then the
   following statements ought to hold after implementing this feature:</p>
     <ol>
      <li>
@@ -683,7 +682,7 @@ dfn > a.self-link::before      { content: "#"; }
       retaining insecure resources for clients that don’t. 
     </ol>
     <p class="note" role="note"><span>Note:</span> The mechanism defined here does <em>not</em> intend to supplant Strict
-  Transport Security <a data-link-type="biblio" href="#biblio-rfc6797">[RFC6797]</a>. See <a href="#relation-to-hsts">§ 8.2 Relation to HSTS</a> for details.</p>
+  Transport Security <a data-link-type="biblio" href="#biblio-rfc6797">[RFC6797]</a>. See <a href="#relation-to-hsts">§ 7.2 Relation to HSTS</a> for details.</p>
     <h3 class="heading settled" data-level="1.2" id="examples"><span class="secno">1.2. </span><span class="content">Examples</span><a class="self-link" href="#examples"></a></h3>
     <h4 class="heading settled" data-level="1.2.1" id="example-nonnavigational"><span class="secno">1.2.1. </span><span class="content">Non-navigational Upgrades</span><a class="self-link" href="#example-nonnavigational"></a></h4>
     <div class="example" id="example-4ef9d09c">
@@ -764,7 +763,7 @@ dfn > a.self-link::before      { content: "#"; }
         be significantly more complex.</p>
       </div>
      <li>
-       Respond to <a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#a-priori-authenticated-url" id="ref-for-a-priori-authenticated-url"><i lang="la">a priori</i> authenticated</a> <a data-link-type="dfn" href="#safely-upgradable-requests" id="ref-for-safely-upgradable-requests①">safely
+       Respond to <a data-link-type="dfn" href="https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-url" id="ref-for-potentially-trustworthy-url">potentially trustworthy URL</a> <a data-link-type="dfn" href="#safely-upgradable-requests" id="ref-for-safely-upgradable-requests①">safely
       upgradable requests</a> with a <code><a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests⑥">upgrade-insecure-requests</a></code> directive if necessary for the resource being requested. 
       <div class="example" id="example-1ea61462">
        <a class="self-link" href="#example-1ea61462"></a> In Nginx, adding this directive might look like this: 
@@ -790,7 +789,7 @@ dfn > a.self-link::before      { content: "#"; }
         preload lists): 
 <pre>server {
   ...
-  
+
   add_header <a data-link-type="dfn" href="https://tools.ietf.org/html/rfc6797#section-6.1" id="ref-for-section-6.1①">Strict-Transport-Security</a> "max-age=10886400; preload"
   add_header <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#content-security-policy" id="ref-for-content-security-policy③">Content-Security-Policy</a> <a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#block-all-mixed-content" id="ref-for-block-all-mixed-content">block-all-mixed-content</a>;
 
@@ -814,7 +813,7 @@ dfn > a.self-link::before      { content: "#"; }
   map $http_https $sts {
     "1" "max-age=10886400"
   }
-  
+
   add_header <a data-link-type="dfn" href="https://tools.ietf.org/html/rfc6797#section-6.1" id="ref-for-section-6.1②">Strict-Transport-Security</a> $sts;
 
   ...
@@ -831,11 +830,11 @@ dfn > a.self-link::before      { content: "#"; }
      <dt data-md><dfn data-dfn-type="dfn" data-export data-lt="upgrade a request" id="upgrade-a-request">upgrade<a class="self-link" href="#upgrade-a-request"></a></dfn>
      <dd data-md>
       <p>A <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request" id="ref-for-concept-request">request</a> is said to be <strong>upgraded</strong> if it is rewritten
- to contain a URL with a <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-scheme" id="ref-for-concept-url-scheme①">scheme</a></code> of <code>https</code> or <code>wss</code>.</p>
+ to contain a URL with a <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-scheme" id="ref-for-concept-url-scheme①">scheme</a> of <code>https</code> or <code>wss</code>.</p>
      <dt data-md><dfn class="dfn-paneled" data-dfn-type="dfn" data-export data-local-lt="safely upgradable" id="safely-upgradable-requests">safely upgradable requests</dfn>
      <dd data-md>
       <p>A <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request" id="ref-for-concept-request①">request</a> is said to be <strong>safely upgradable</strong> if the <a data-link-type="dfn" href="https://tools.ietf.org/html/rfc7231#section-3" id="ref-for-section-3">resource representation</a> which will be returned does not require the <code><a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests⑧">upgrade-insecure-requests</a></code> mechanism described in this
-  document to avoid breakage, or if the <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request" id="ref-for-concept-request②">request</a>’s <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-header-list" id="ref-for-concept-request-header-list">header-list</a> contains an <a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field" id="ref-for-upgrade-insecure-requests-http-request-header-field"><code>Upgrade-Insecure-Requests</code> header field</a> with a value of <code>1</code>.</p>
+  document to avoid breakage, or if the <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request" id="ref-for-concept-request②">request</a>'s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request-header-list" id="ref-for-concept-request-header-list">header list</a> contains an <a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field" id="ref-for-upgrade-insecure-requests-http-request-header-field"><code>Upgrade-Insecure-Requests</code> header field</a> with a value of <code>1</code>.</p>
      <dt data-md><dfn class="dfn-paneled" data-dfn-type="dfn" data-export data-local-lt="HSTS-safe" id="hsts-safe-origin">HSTS-safe origin</dfn>
      <dd data-md>
       <p>An <a data-link-type="dfn" href="https://tools.ietf.org/html/rfc6454#section-3.2" id="ref-for-section-3.2">origin</a> is said to be <strong>HSTS-safe</strong> if no <a data-link-type="dfn" href="https://tools.ietf.org/html/rfc7231#section-3" id="ref-for-section-3①">resource representations</a> it returns requires the the <code><a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests⑨">upgrade-insecure-requests</a></code> mechanism described in
@@ -851,7 +850,7 @@ dfn > a.self-link::before      { content: "#"; }
   support <code><a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests①②">upgrade-insecure-requests</a></code>.</p>
      <dt data-md><dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="preloadable-hsts-host">preloadable HSTS host</dfn>
      <dd data-md>
-      <p>A <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-host" id="ref-for-concept-url-host①">host</a></code> <var>host</var> is a <strong>preloadable HSTS
+      <p>A <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-host" id="ref-for-concept-url-host①">host</a> <var>host</var> is a <strong>preloadable HSTS
   host</strong> if, when performing <a data-link-type="dfn" href="https://tools.ietf.org/html/rfc6797#section-8.2" id="ref-for-section-8.2">Known HSTS Host Domain Name
   Matching</a>, <var>host</var> is a <a data-link-type="dfn" href="https://tools.ietf.org/html/rfc6797#section-8.2" id="ref-for-section-8.2①">superdomain match</a> for a <a data-link-type="dfn" href="https://tools.ietf.org/html/rfc6797#section-8.1.1" id="ref-for-section-8.1.1">Known HSTS Host</a> which asserts both the <a data-link-type="dfn" href="https://tools.ietf.org/html/rfc6797#section-6.1.2" id="ref-for-section-6.1.2">includeSubDomains</a> directive and the <code>preload</code> directive, or <var>host</var> is a <a data-link-type="dfn" href="https://tools.ietf.org/html/rfc6797#section-8.2" id="ref-for-section-8.2②">congruent match</a>for a <a data-link-type="dfn" href="https://tools.ietf.org/html/rfc6797#section-8.1.1" id="ref-for-section-8.1.1①">Known HSTS Host</a> which asserts
   the <code>preload</code> directive.</p>
@@ -866,7 +865,7 @@ dfn > a.self-link::before      { content: "#"; }
     <h2 class="heading settled" data-level="3" id="upgrading"><span class="secno">3. </span><span class="content">Upgrading Insecure Resource Requests</span><a class="self-link" href="#upgrading"></a></h2>
     <p>In order to allow authors to mitigate the negative side-effects of migration
   away from insecure origins, authors may instruct the user agent to
-  transparently upgrade resource requests to <a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#a-priori-authenticated-url" id="ref-for-a-priori-authenticated-url①"><i lang="la">a priori</i> authenticated</a> variants of the original request’s URL.</p>
+  transparently upgrade resource requests to <a data-link-type="dfn" href="https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-url" id="ref-for-potentially-trustworthy-url①">potentially trustworthy URL</a> variants of the original request’s URL.</p>
     <p>To support this instruction:</p>
     <ol>
      <li> <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#settings-object" id="ref-for-settings-object">Environment settings objects</a> and <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#browsing-context" id="ref-for-browsing-context">browsing contexts</a> are
@@ -874,13 +873,13 @@ dfn > a.self-link::before      { content: "#"; }
       potential values <dfn class="dfn-paneled css" data-dfn-for="insecure requests policy" data-dfn-type="value" data-export data-lt="Do Not Upgrade" id="valdef-insecure-requests-policy-do-not-upgrade">Do Not
       Upgrade</dfn> and <dfn class="dfn-paneled css" data-dfn-for="insecure requests policy" data-dfn-type="value" data-export id="valdef-insecure-requests-policy-upgrade">Upgrade</dfn>. It is
       set to <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-do-not-upgrade" id="ref-for-valdef-insecure-requests-policy-do-not-upgrade">Do Not Upgrade</a> unless otherwise specified. This policy
-      is checked in <a href="#upgrade-request">§ 4.1 Upgrade request to an a priori authenticated URL, if appropriate</a> in order to determine whether or not
-      non-navigation requests and form submissions should be upgraded during <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#fetching" id="ref-for-fetching">fetching</a>. 
+      is checked in <a href="#upgrade-request" id="ref-for-upgrade-request">§ 4.1 Upgrade request to a potentially trustworthy URL, if appropriate</a> in order to determine whether or not
+      non-navigation requests and form submissions should be upgraded during <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-fetch" id="ref-for-concept-fetch">fetching</a>. 
      <li> <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#settings-object" id="ref-for-settings-object①">Environment settings objects</a> and <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#browsing-context" id="ref-for-browsing-context①">browsing contexts</a> are
       given an <dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="upgrade-insecure-navigations-set">upgrade insecure navigations set</dfn> which
-      contains a set of (<code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-host" id="ref-for-concept-url-host②">host</a></code>, <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-port" id="ref-for-concept-url-port">port</a></code>) tuples to which navigations
+      contains a set of (<a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-host" id="ref-for-concept-url-host②">host</a>, <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-port" id="ref-for-concept-url-port">port</a>) tuples to which navigations
       ought to be upgraded. Its value is the empty set unless otherwise
-      specified. This set is checked in <a href="#upgrade-request">§ 4.1 Upgrade request to an a priori authenticated URL, if appropriate</a> in order to
+      specified. This set is checked in <a href="#upgrade-request" id="ref-for-upgrade-request①">§ 4.1 Upgrade request to a potentially trustworthy URL, if appropriate</a> in order to
       determine whether or not <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#navigation-request" id="ref-for-navigation-request">navigation requests</a> should be upgraded. 
     </ol>
     <h3 class="heading settled" data-level="3.1" id="delivery"><span class="secno">3.1. </span><span class="content"> The <code>upgrade-insecure-requests</code> Content Security Policy directive </span><a class="self-link" href="#delivery"></a></h3>
@@ -911,7 +910,7 @@ directive-value = ""
      <li> Let <var>settings</var> be the <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#protected-resource" id="ref-for-protected-resource①">protected resource</a>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#incumbent-settings-object" id="ref-for-incumbent-settings-object">incumbent
       settings object</a>. 
      <li> Set <var>settings</var>’s <a data-link-type="dfn" href="#insecure-requests-policy" id="ref-for-insecure-requests-policy">insecure requests policy</a> to <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-upgrade" id="ref-for-valdef-insecure-requests-policy-upgrade">Upgrade</a>. 
-     <li> Let <var>tuple</var> be a tuple of the <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#protected-resource" id="ref-for-protected-resource②">protected resource</a>’s <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url" id="ref-for-concept-url">URL</a></code>'s <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-host" id="ref-for-concept-url-host③">host</a></code> and <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-port" id="ref-for-concept-url-port①">port</a></code>. 
+     <li> Let <var>tuple</var> be a tuple of the <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#protected-resource" id="ref-for-protected-resource②">protected resource</a>’s <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url" id="ref-for-concept-url">URL</a>'s <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-host" id="ref-for-concept-url-host③">host</a> and <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-port" id="ref-for-concept-url-port①">port</a>. 
      <li> Insert <var>tuple</var> into <var>settings</var>’s <a data-link-type="dfn" href="#upgrade-insecure-navigations-set" id="ref-for-upgrade-insecure-navigations-set">upgrade insecure
       navigations set</a>. 
     </ol>
@@ -923,7 +922,7 @@ directive-value = ""
   default-src https:; report-uri /endpoint</code>. See <a href="#reporting-upgrades">§ 3.4 Reporting Upgrades</a> for additional detail.</p>
     <h4 class="heading settled" data-level="3.1.1" id="mix"><span class="secno">3.1.1. </span><span class="content">Relation to "Mixed Content"</span><a class="self-link" href="#mix"></a></h4>
     <p>The <code><a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests①③">upgrade-insecure-requests</a></code> directive results in
-  requests being rewritten at the top of the <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#fetching" id="ref-for-fetching①">Fetching</a> algorithm <a data-link-type="biblio" href="#biblio-fetch">[FETCH]</a>, as specified in <a href="#upgrade-request">§ 4.1 Upgrade request to an a priori authenticated URL, if appropriate</a>. It’s important to note that
+  requests being rewritten at the top of the <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-fetch" id="ref-for-concept-fetch①">Fetching</a> algorithm <a data-link-type="biblio" href="#biblio-fetch">[FETCH]</a>, as specified in <a href="#upgrade-request" id="ref-for-upgrade-request②">§ 4.1 Upgrade request to a potentially trustworthy URL, if appropriate</a>. It’s important to note that
   the rewrite happens <em>before</em> either Mixed Content <a data-link-type="biblio" href="#biblio-mix">[MIX]</a> or Content
   Security Policy checks take effect <a data-link-type="biblio" href="#biblio-csp">[CSP]</a>.</p>
     <p>This ordering means that upgraded requests <em>will not</em> be flagged as
@@ -970,7 +969,7 @@ directive-value = ""
   preference, sending it via the existing <code><a data-link-type="dfn" href="https://tools.ietf.org/html/rfc7240#section-2" id="ref-for-section-2">Prefer</a></code> header is
   problematic, as we expect the response from the server to use it as part of
   the cache key. <code>Vary: Prefer</code> is too broad, as discussed in <a href="https://github.com/w3c/webappsec/issues/216">w3/webappsec#216</a>.</p>
-    <p>User agent conformance details are described in step #1 of the the <a href="#upgrade-request">§ 4.1 Upgrade request to an a priori authenticated URL, if appropriate</a> algorithm. That step represents the following
+    <p>User agent conformance details are described in step #1 of the the <a href="#upgrade-request" id="ref-for-upgrade-request③">§ 4.1 Upgrade request to a potentially trustworthy URL, if appropriate</a> algorithm. That step represents the following
   requirements:</p>
     <ol>
      <li>
@@ -980,11 +979,11 @@ directive-value = ""
       pages that require <code><a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests①⑥">upgrade-insecure-requests</a></code> support.</p>
      <li>
        User agents MUST send an <a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field" id="ref-for-upgrade-insecure-requests-http-request-header-field③"><code>Upgrade-Insecure-Requests</code> header
-      field</a> along with <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request" id="ref-for-concept-request⑤">request</a>s for <a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#a-priori-authenticated-url" id="ref-for-a-priori-authenticated-url②"><i lang="la">a priori</i> authenticated URLs</a> whose <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-url" id="ref-for-concept-request-url">url</a>’s <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-host" id="ref-for-concept-url-host④">host</a></code> is <em>not</em> a <a data-link-type="dfn" href="#preloadable-hsts-host" id="ref-for-preloadable-hsts-host">preloadable HSTS host</a>. 
+      field</a> along with <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request" id="ref-for-concept-request⑤">request</a>s for <a data-link-type="dfn" href="https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-url" id="ref-for-potentially-trustworthy-url②">potentially trustworthy URLs</a> whose <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request-url" id="ref-for-concept-request-url">URL</a>'s <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-host" id="ref-for-concept-url-host④">host</a> is <em>not</em> a <a data-link-type="dfn" href="#preloadable-hsts-host" id="ref-for-preloadable-hsts-host">preloadable HSTS host</a>. 
       <p class="note" role="note"><span>Note:</span> Servers can use the absence of this signal to downgrade HTTPS
       requests to HTTP for pages that require <code><a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests①⑦">upgrade-insecure-requests</a></code> support.</p>
      <li>
-       User agents SHOULD periodically send an <a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field" id="ref-for-upgrade-insecure-requests-http-request-header-field④"><code>Upgrade-Insecure-Requests</code> header field</a> along with <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request" id="ref-for-concept-request⑥">request</a>s for <a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#a-priori-authenticated-url" id="ref-for-a-priori-authenticated-url③"><i lang="la">a priori</i> authenticated URLs</a> whose <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-url" id="ref-for-concept-request-url①">url</a>’s <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-host" id="ref-for-concept-url-host⑤">host</a></code> <em>is</em> a <a data-link-type="dfn" href="#preloadable-hsts-host" id="ref-for-preloadable-hsts-host①">preloadable HSTS host</a>. For example, user agents could send an <a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field" id="ref-for-upgrade-insecure-requests-http-request-header-field⑤"><code>Upgrade-Insecure-Requests</code> header field</a> only when
+       User agents SHOULD periodically send an <a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field" id="ref-for-upgrade-insecure-requests-http-request-header-field④"><code>Upgrade-Insecure-Requests</code> header field</a> along with <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request" id="ref-for-concept-request⑥">request</a>s for <a data-link-type="dfn" href="https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-url" id="ref-for-potentially-trustworthy-url③">potentially trustworthy URLs</a> whose <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request-url" id="ref-for-concept-request-url①">URL</a>'s <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-host" id="ref-for-concept-url-host⑤">host</a> <em>is</em> a <a data-link-type="dfn" href="#preloadable-hsts-host" id="ref-for-preloadable-hsts-host①">preloadable HSTS host</a>. For example, user agents could send an <a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field" id="ref-for-upgrade-insecure-requests-http-request-header-field⑤"><code>Upgrade-Insecure-Requests</code> header field</a> only when
       the asserted <code>max-age</code> is a few days from expiration, or
       only for a small percentage of requests. 
       <p class="note" role="note"><span>Note:</span> <a data-link-type="dfn" href="#preloadable-hsts-host" id="ref-for-preloadable-hsts-host②">preloadable HSTS hosts</a> have asserted that they are <a data-link-type="dfn" href="#hsts-safe-origin" id="ref-for-hsts-safe-origin②">HSTS-safe</a>, and therefore don’t need a downgrade signal. They will
@@ -992,10 +991,11 @@ directive-value = ""
       field</a> serves as a fine signal that HSTS could be refreshed.</p>
     </ol>
     <p>When a server encounters this preference in an HTTP request’s headers, it
-  SHOULD redirect the user to a <a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#a-priori-authenticated-url" id="ref-for-a-priori-authenticated-url④"><i lang="la">a priori</i> authenticated</a> representation of the resource being requested.</p>
+  SHOULD redirect the user to a <a data-link-type="dfn" href="https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-url" id="ref-for-potentially-trustworthy-url④">potentially trustworthy URL</a> variant
+  of the resource being requested.</p>
     <p>When a server encounters this preference in an HTTPS request’s headers,
   it SHOULD include a <code><a data-link-type="dfn" href="https://tools.ietf.org/html/rfc6797#section-6.1" id="ref-for-section-6.1⑦">Strict-Transport-Security</a></code> header in
-  the response if the request’s <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-host" id="ref-for-concept-url-host⑥">host</a></code> is <a data-link-type="dfn" href="#hsts-safe-origin" id="ref-for-hsts-safe-origin③">HSTS-safe</a> or <a data-link-type="dfn" href="#conditionally-hsts-safe-origin" id="ref-for-conditionally-hsts-safe-origin③">conditionally HSTS-safe</a> <a data-link-type="biblio" href="#biblio-rfc6797">[RFC6797]</a>.</p>
+  the response if the request’s <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-host" id="ref-for-concept-url-host⑥">host</a> is <a data-link-type="dfn" href="#hsts-safe-origin" id="ref-for-hsts-safe-origin③">HSTS-safe</a> or <a data-link-type="dfn" href="#conditionally-hsts-safe-origin" id="ref-for-conditionally-hsts-safe-origin③">conditionally HSTS-safe</a> <a data-link-type="biblio" href="#biblio-rfc6797">[RFC6797]</a>.</p>
     <div class="example" id="example-f4e41abf">
      <a class="self-link" href="#example-f4e41abf"></a> A client that supports this document’s upgrade mechanism requests <code>http://example.com/</code> as follows: 
 <pre>GET / HTTP/1.1
@@ -1027,11 +1027,11 @@ Location: https://example.com/
        When a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#nested-browsing-context" id="ref-for-nested-browsing-context①">nested browsing context</a> <var>context</var> is created: 
       <ol>
        <li>
-         If <var>context</var>’s <a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#embedding-document" id="ref-for-embedding-document">embedding document</a>’s <a data-link-type="dfn" href="#insecure-requests-policy" id="ref-for-insecure-requests-policy②">insecure
+         If <var>context</var>’s <a data-link-type="dfn" href="https://w3c.github.io/webappsec-mixed-content/#embedding-document" id="ref-for-embedding-document">embedding document</a>’s <a data-link-type="dfn" href="#insecure-requests-policy" id="ref-for-insecure-requests-policy②">insecure
           requests policy</a> is <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-upgrade" id="ref-for-valdef-insecure-requests-policy-upgrade②">Upgrade</a>, then: 
         <ol>
          <li> Set <var>context</var>’s <a data-link-type="dfn" href="#insecure-requests-policy" id="ref-for-insecure-requests-policy③">insecure requests policy</a> to <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-upgrade" id="ref-for-valdef-insecure-requests-policy-upgrade③">Upgrade</a>. 
-         <li> For each <var>value</var> in <var>context</var>’s <a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#embedding-document" id="ref-for-embedding-document①">embedding
+         <li> For each <var>value</var> in <var>context</var>’s <a data-link-type="dfn" href="https://w3c.github.io/webappsec-mixed-content/#embedding-document" id="ref-for-embedding-document①">embedding
               document</a>’s <a data-link-type="dfn" href="#upgrade-insecure-navigations-set" id="ref-for-upgrade-insecure-navigations-set①">upgrade insecure navigations set</a>, add <var>value</var> to <var>context</var>’s <a data-link-type="dfn" href="#upgrade-insecure-navigations-set" id="ref-for-upgrade-insecure-navigations-set②">upgrade insecure
               navigations set</a>. 
         </ol>
@@ -1091,8 +1091,8 @@ Location: https://example.com/
    </section>
    <section>
     <h2 class="heading settled" data-level="4" id="algorithms"><span class="secno">4. </span><span class="content">Processing Algorithms</span><a class="self-link" href="#algorithms"></a></h2>
-    <h3 class="heading settled" data-level="4.1" id="upgrade-request"><span class="secno">4.1. </span><span class="content"> Upgrade <var>request</var> to an <i lang="la">a priori</i> authenticated URL, if appropriate </span><a class="self-link" href="#upgrade-request"></a></h3>
-    <p>Given a <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request" id="ref-for-concept-request⑧">request</a> <var>request</var>, this algorithm will rewrite its <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-url" id="ref-for-concept-request-url②">url</a> if the <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-client" id="ref-for-concept-request-client">client</a> from which the request originates
+    <h3 class="heading settled dfn-paneled" data-dfn-type="dfn" data-export data-level="4.1" data-lt="Upgrade request to a potentially trustworthy URL, if appropriate" id="upgrade-request"><span class="secno">4.1. </span><span class="content"> Upgrade <var>request</var> to a <a data-link-type="dfn" href="https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-url" id="ref-for-potentially-trustworthy-url⑤">potentially trustworthy URL</a>, if appropriate </span><a class="self-link" href="#upgrade-request" id="ref-for-upgrade-request④"></a></h3>
+    <p>Given a <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request" id="ref-for-concept-request⑧">request</a> <var>request</var>, this algorithm will rewrite its <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request-url" id="ref-for-concept-request-url②">URL</a> if the <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request-client" id="ref-for-concept-request-client">client</a> from which the request originates
   has opted-in to upgrades. It will also inject an <a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field" id="ref-for-upgrade-insecure-requests-http-request-header-field①⓪"><code>Upgrade-Insecure-Requests</code> header field</a> header for
   insecure <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#navigation-request" id="ref-for-navigation-request②">navigation requests</a> in order to improve a server’s ability to
   feature-detect a client’s upgrade capabilities.</p>
@@ -1103,11 +1103,11 @@ Location: https://example.com/
     <ol>
      <li>
        If <var>request</var> is a <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#navigation-request" id="ref-for-navigation-request④">navigation request</a>, <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-header-list-append" id="ref-for-concept-header-list-append">append</a> a
-      header named <code>Upgrade-Insecure-Requests</code> with a value of <code>1</code> to <var>request</var>’s <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-header-list" id="ref-for-concept-request-header-list①">header-list</a> if any of the following
+      header named <code>Upgrade-Insecure-Requests</code> with a value of <code>1</code> to <var>request</var>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request-header-list" id="ref-for-concept-request-header-list①">header list</a> if any of the following
       criteria are met: 
       <ol>
-       <li> <var>request</var>’s <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-url" id="ref-for-concept-request-url③">url</a> is not <a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#a-priori-authenticated-url" id="ref-for-a-priori-authenticated-url⑤"><i lang="la">a priori</i> authenticated</a> 
-       <li> <var>request</var>’s <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-url" id="ref-for-concept-request-url④">url</a>’s <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-host" id="ref-for-concept-url-host⑦">host</a></code> is <em>not</em> a <a data-link-type="dfn" href="#preloadable-hsts-host" id="ref-for-preloadable-hsts-host③">preloadable HSTS host</a> 
+       <li> <var>request</var>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request-url" id="ref-for-concept-request-url③">URL</a> is not a <a data-link-type="dfn" href="https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-url" id="ref-for-potentially-trustworthy-url⑥">potentially trustworthy URL</a> 
+       <li> <var>request</var>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request-url" id="ref-for-concept-request-url④">URL</a>'s <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-host" id="ref-for-concept-url-host⑦">host</a> is <em>not</em> a <a data-link-type="dfn" href="#preloadable-hsts-host" id="ref-for-preloadable-hsts-host③">preloadable HSTS host</a> 
       </ol>
       <p class="note" role="note"><span>Note:</span> User agents can choose to append the <a data-link-type="dfn" href="#upgrade-insecure-requests-http-request-header-field" id="ref-for-upgrade-insecure-requests-http-request-header-field①①"><code>Upgrade-Insecure-Requests</code> header field</a> for other
       requests, as discussed in <a href="#preference">§ 3.2.1 The Upgrade-Insecure-Requests HTTP Request Header Field</a>.</p>
@@ -1116,10 +1116,10 @@ Location: https://example.com/
       <ol>
        <li> If <var>request</var> is a form submission, skip the remaining
           substeps, and continue upgrading <var>request</var>. 
-       <li> If <var>request</var>’s <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-target-browsing-context" id="ref-for-concept-request-target-browsing-context">target browsing context</a> is a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#nested-browsing-context" id="ref-for-nested-browsing-context②">nested browsing context</a>, skip the remaining substeps
+       <li> If <var>request</var>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request-client" id="ref-for-concept-request-client①">client</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-environment-target-browsing-context" id="ref-for-concept-environment-target-browsing-context">target browsing context</a> is a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#nested-browsing-context" id="ref-for-nested-browsing-context②">nested browsing context</a>, skip the remaining substeps
           and continue upgrading <var>request</var>. 
-       <li> Let <var>tuple</var> be a tuple of <var>request</var>’s <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-url" id="ref-for-concept-request-url⑤">url</a>’s <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-host" id="ref-for-concept-url-host⑧">host</a></code> and <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-port" id="ref-for-concept-url-port②">port</a></code>. 
-       <li> If <var>tuple</var> is contained in <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-client" id="ref-for-concept-request-client①">client</a>’s <a data-link-type="dfn" href="#upgrade-insecure-navigations-set" id="ref-for-upgrade-insecure-navigations-set⑦">upgrade insecure navigations set</a>, then skip the remaining
+       <li> Let <var>tuple</var> be a tuple of <var>request</var>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request-url" id="ref-for-concept-request-url⑤">URL</a>'s <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-host" id="ref-for-concept-url-host⑧">host</a> and <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-port" id="ref-for-concept-url-port②">port</a>. 
+       <li> If <var>tuple</var> is contained in <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request-client" id="ref-for-concept-request-client②">client</a>'s <a data-link-type="dfn" href="#upgrade-insecure-navigations-set" id="ref-for-upgrade-insecure-navigations-set⑦">upgrade insecure navigations set</a>, then skip the remaining
           substeps, and continue upgrading <var>request</var>. 
        <li> Return without further modifying <var>request</var>. 
       </ol>
@@ -1130,24 +1130,16 @@ Location: https://example.com/
       the moment. Nested navigations (via <code><a data-link-type="element" href="https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element" id="ref-for-the-iframe-element">iframe</a></code>, for example) affect
       the security status of their embedder, so we ensure that they are
       upgraded if necessary.</p>
-     <li> Let <var>upgrade state</var> be the result of executing <a href="#should-upgrade-for-client">§ 4.2 Should insecure requests be upgraded for client?</a> upon <var>request</var>’s <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-client" id="ref-for-concept-request-client②">client</a>. 
+     <li> Let <var>upgrade state</var> be the result of executing <a href="#should-upgrade-for-client">§ 4.2 Should insecure requests be upgraded for client?</a> upon <var>request</var>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request-client" id="ref-for-concept-request-client③">client</a>. 
      <li> If <var>upgrade state</var> is <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-do-not-upgrade" id="ref-for-valdef-insecure-requests-policy-do-not-upgrade①">Do Not Upgrade</a>, return without
       modifying <var>request</var>. 
-     <li> If <var>request</var>’s <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-url" id="ref-for-concept-request-url⑥">url</a>’s <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-scheme" id="ref-for-concept-url-scheme②">scheme</a></code> is <code>http</code>, set <var>request</var>’s <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-url" id="ref-for-concept-request-url⑦">url</a>’s <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-scheme" id="ref-for-concept-url-scheme③">scheme</a></code> to <code>https</code>, and return. 
-     <li>
-       If <var>request</var>’s <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-url" id="ref-for-concept-request-url⑧">url</a>s <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-port" id="ref-for-concept-url-port③">port</a></code> is <code>80</code>, set <var>request</var>’s <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-url" id="ref-for-concept-request-url⑨">url</a>s <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/url/#concept-url-port" id="ref-for-concept-url-port④">port</a></code> to <code>443</code>. 
-      <p class="note" role="note"><span>Note:</span> This will only change the URL’s port if the port is
-      explicitly set to <code>80</code>. If the port is not set, or if
-      it is set to some non-standard value, the user agent will not
-      modify that value. This implementation makes the same tradeoffs as
-      HSTS (see <a data-link-type="biblio" href="#biblio-rfc6797">[RFC6797]</a>, and specifically step #5 of <a href="https://tools.ietf.org/html/rfc6797#section-8.3">Section
-      8.3</a>, and item #6 in <a href="https://tools.ietf.org/html/rfc6797#appendix-A">Appendix
-      A</a>).</p>
+     <li> If <var>request</var>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request-url" id="ref-for-concept-request-url⑥">URL</a>'s <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-scheme" id="ref-for-concept-url-scheme②">scheme</a> is
+      "<code>http</code>", set <var>request</var>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request-url" id="ref-for-concept-request-url⑦">URL</a>'s <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-scheme" id="ref-for-concept-url-scheme③">scheme</a> to "<code>https</code>", and return. 
     </ol>
     <p class="note" role="note"><span>Note:</span> Due to <a data-link-type="biblio" href="#biblio-fetch">[FETCH]</a>'s recursive nature, this algorithm will upgrade
   insecurely-redirected requests as well as insecure initial requests.</p>
     <h3 class="heading settled" data-level="4.2" id="should-upgrade-for-client"><span class="secno">4.2. </span><span class="content"> Should insecure <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request" id="ref-for-concept-request⑨">request</a>s be upgraded for <var>client</var>? </span><a class="self-link" href="#should-upgrade-for-client"></a></h3>
-    <p>Given an <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request" id="ref-for-concept-request①⓪">request</a>’s <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-client" id="ref-for-concept-request-client③">client</a> <var>client</var> (an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#settings-object" id="ref-for-settings-object②">environment settings object</a>), this algorithm
+    <p>Given an <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request" id="ref-for-concept-request①⓪">request</a>'s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request-client" id="ref-for-concept-request-client④">client</a> <var>client</var> (an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#settings-object" id="ref-for-settings-object②">environment settings object</a>), this algorithm
   returns <code>Enforced Upgrade</code> if insecure requests associated with
   that client should be upgraded, or <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-do-not-upgrade" id="ref-for-valdef-insecure-requests-policy-do-not-upgrade②">Do Not Upgrade</a> otherwise. In
   short, this will check the client and return the appropriate <a data-link-type="dfn" href="#insecure-requests-policy" id="ref-for-insecure-requests-policy⑧">insecure
@@ -1158,55 +1150,24 @@ Location: https://example.com/
       of its <a data-link-type="dfn" href="#insecure-requests-policy" id="ref-for-insecure-requests-policy⑨">insecure requests policy</a>. 
       <p class="note" role="note"><span>Note:</span> This catches <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/dom/#interface-document" id="ref-for-interface-document①">Document</a></code>s or <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/workers/#worker" id="ref-for-worker">Worker</a></code>s whose policy is set
       directly by the <code><a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests①⑨">upgrade-insecure-requests</a></code> directive,
-      or which have inherited the policy from an <a data-link-type="dfn" href="https://w3c.github.io/webappsec/specs/mixedcontent/#embedding-document" id="ref-for-embedding-document②">embedding document</a>.</p>
+      or which have inherited the policy from an <a data-link-type="dfn" href="https://w3c.github.io/webappsec-mixed-content/#embedding-document" id="ref-for-embedding-document②">embedding document</a>.</p>
      <li>
        If <var>client</var> has a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#responsible-browsing-context" id="ref-for-responsible-browsing-context">responsible browsing context</a>, return the
       value of its <a data-link-type="dfn" href="#insecure-requests-policy" id="ref-for-insecure-requests-policy①⓪">insecure requests policy</a>. 
-      <p class="note" role="note"><span>Note:</span> This catches requests triggered from detached <a class="idl-code" data-link-type="attribute" href="https://fetch.spec.whatwg.org/#concept-request-client" id="ref-for-concept-request-client④">client</a>s. Not sure this is necessary, really,
+      <p class="note" role="note"><span>Note:</span> This catches requests triggered from detached <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request-client" id="ref-for-concept-request-client⑤">client</a>s. Not sure this is necessary, really,
       given the inheritance structure defined in <a href="#nesting">§ 3.3 Policy Inheritance</a>.</p>
      <li> Return <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-do-not-upgrade" id="ref-for-valdef-insecure-requests-policy-do-not-upgrade③">Do Not Upgrade</a>. 
     </ol>
    </section>
    <section>
-    <h2 class="heading settled" data-level="5" id="websockets-integration"><span class="secno">5. </span><span class="content">Modifications to WebSockets</span><a class="self-link" href="#websockets-integration"></a></h2>
-    <p>WebSockets do not use the <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#fetching" id="ref-for-fetching②">fetching</a> algorithm, so we need to handle
-  those requests separately.</p>
-    <p>The <a data-link-type="dfn" href="https://tools.ietf.org/html/rfc6455#section-4.1" id="ref-for-section-4.1">establish a WebSocket connection</a> algorithm <a data-link-type="biblio" href="#biblio-rfc6455">[RFC6455]</a> is modified
-  as follows:</p>
-    <ul>
-     <li>
-       After the current step 1 (and before the new step #2 introduced in <a data-link-type="biblio" href="#biblio-mix">[MIX]</a>), perform the following step: 
-      <ol>
-       <li>
-         If <var>secure</var> is <strong>false</strong>: 
-        <ol>
-         <li> Let <var>upgrade state</var> be the result of executing <a href="#should-upgrade-for-client">§ 4.2 Should insecure requests be upgraded for client?</a> upon the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#relevant-settings-object-for-a-script" id="ref-for-relevant-settings-object-for-a-script">relevant settings
-              object</a> for <var>client</var>’s <var>entry script</var>. 
-         <li> If <var>upgrade state</var> is <a class="css" data-link-type="value" href="#valdef-insecure-requests-policy-do-not-upgrade" id="ref-for-valdef-insecure-requests-policy-do-not-upgrade④">Do Not Upgrade</a>, skip
-              the remaining substeps. 
-         <li> Set <var>secure</var> to <code>true</code>. 
-         <li>
-           If <var>port</var> is <code>80</code>, set <var>port</var> to <code>443</code>. 
-          <p class="note" role="note"><span>Note:</span> This will only change the URL’s port if the port is
-              explicitly set to <code>80</code>. If the port is not set, or if
-              it is set to some non-standard value, the user agent will not
-              modify that value. This implementation makes the same tradeoffs as
-              HSTS (see <a data-link-type="biblio" href="#biblio-rfc6797">[RFC6797]</a>, and specifically step #5 of <a href="https://tools.ietf.org/html/rfc6797#section-8.3">Section
-              8.3</a>, and item #6 in <a href="https://tools.ietf.org/html/rfc6797#appendix-A">Appendix
-              A</a>).</p>
-        </ol>
-      </ol>
-    </ul>
-   </section>
-   <section>
-    <h2 class="heading settled" data-level="6" id="security"><span class="secno">6. </span><span class="content">Security Considerations</span><a class="self-link" href="#security"></a></h2>
-    <h3 class="heading settled" data-level="6.1" id="hsts"><span class="secno">6.1. </span><span class="content">Interaction with HSTS</span><a class="self-link" href="#hsts"></a></h3>
+    <h2 class="heading settled" data-level="5" id="security"><span class="secno">5. </span><span class="content">Security Considerations</span><a class="self-link" href="#security"></a></h2>
+    <h3 class="heading settled" data-level="5.1" id="hsts"><span class="secno">5.1. </span><span class="content">Interaction with HSTS</span><a class="self-link" href="#hsts"></a></h3>
     <p>The <code><a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests②⓪">upgrade-insecure-requests</a></code> directive does not replace
   the <code><a data-link-type="dfn" href="https://tools.ietf.org/html/rfc6797#section-6.1" id="ref-for-section-6.1⑧">Strict-Transport-Security</a></code> HTTP response header <a data-link-type="biblio" href="#biblio-rfc6797">[RFC6797]</a>. Authors who serve their site over secure transport SHOULD send
   that header with an appropriate <code>max-age</code> in order to ensure that
   users are not subject to SSL stripping attacks by maliciously active network
   attackers, or monitoring by maliciously passive network attackers.</p>
-    <h3 class="heading settled" data-level="6.2" id="violation-report-target"><span class="secno">6.2. </span><span class="content">CSP Violation Reports</span><a class="self-link" href="#violation-report-target"></a></h3>
+    <h3 class="heading settled" data-level="5.2" id="violation-report-target"><span class="secno">5.2. </span><span class="content">CSP Violation Reports</span><a class="self-link" href="#violation-report-target"></a></h3>
     <p>When sending a violation report for an upgraded resource, user agents MUST
   target the <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/dom/#interface-document" id="ref-for-interface-document②">Document</a></code> or <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/workers/#worker" id="ref-for-worker①">Worker</a></code> that triggered the request, rather
   than the <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/dom/#interface-document" id="ref-for-interface-document③">Document</a></code> or <code class="idl"><a data-link-type="idl" href="http://www.w3.org/TR/workers/#worker" id="ref-for-worker②">Worker</a></code> on which the <code><a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests②①">upgrade-insecure-requests</a></code> directive was set. Due to <a href="#nesting">§ 3.3 Policy Inheritance</a>, the latter might be a cross-origin ancestor of the former, and
@@ -1216,7 +1177,7 @@ Location: https://example.com/
   reasons.</p>
    </section>
    <section>
-    <h2 class="heading settled" data-level="7" id="performance"><span class="secno">7. </span><span class="content">Performance Considerations</span><a class="self-link" href="#performance"></a></h2>
+    <h2 class="heading settled" data-level="6" id="performance"><span class="secno">6. </span><span class="content">Performance Considerations</span><a class="self-link" href="#performance"></a></h2>
     <p>The upgrade mechanism specified here adds <code>Upgrade-Insecure-Requests:
   1\r\n</code> to every outgoing <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#navigation-request" id="ref-for-navigation-request⑦">navigation request</a> to non-<a data-link-type="dfn" href="#preloadable-hsts-host" id="ref-for-preloadable-hsts-host④">preloadable
   HSTS hosts</a> (as discussed at length on public-webappsec@, and <a href="https://github.com/w3c/webappsec/issues/216">w3c/webappsec#216</a>).
@@ -1227,8 +1188,8 @@ Location: https://example.com/
     <p>User agents are encouraged to find additional carveouts, and implement them.</p>
    </section>
    <section>
-    <h2 class="heading settled" data-level="8" id="authoring"><span class="secno">8. </span><span class="content">Authoring Considerations</span><a class="self-link" href="#authoring"></a></h2>
-    <h3 class="heading settled" data-level="8.1" id="legacy-clients"><span class="secno">8.1. </span><span class="content">Legacy Clients</span><a class="self-link" href="#legacy-clients"></a></h3>
+    <h2 class="heading settled" data-level="7" id="authoring"><span class="secno">7. </span><span class="content">Authoring Considerations</span><a class="self-link" href="#authoring"></a></h2>
+    <h3 class="heading settled" data-level="7.1" id="legacy-clients"><span class="secno">7.1. </span><span class="content">Legacy Clients</span><a class="self-link" href="#legacy-clients"></a></h3>
     <p>Legacy clients which do support mixed content blocking <a data-link-type="biblio" href="#biblio-mix">[MIX]</a>, but do not
   support the <code><a data-link-type="dfn" href="#upgrade-insecure-requests" id="ref-for-upgrade-insecure-requests②②">upgrade-insecure-requests</a></code> directive will
   continue to have a suboptimal experience on pages containing insecure URLs.
@@ -1236,7 +1197,7 @@ Location: https://example.com/
   which resources are most problematic for their users, and SHOULD use that
   information to prioritize fixes for URLs in legacy content that users will
   most likely request.</p>
-    <h3 class="heading settled" data-level="8.2" id="relation-to-hsts"><span class="secno">8.2. </span><span class="content">Relation to HSTS</span><a class="self-link" href="#relation-to-hsts"></a></h3>
+    <h3 class="heading settled" data-level="7.2" id="relation-to-hsts"><span class="secno">7.2. </span><span class="content">Relation to HSTS</span><a class="self-link" href="#relation-to-hsts"></a></h3>
     <p>The mechanism specified here deals only with the security policy for a
   specific <a data-link-type="dfn" href="https://www.w3.org/TR/CSP/#protected-resource" id="ref-for-protected-resource⑤">protected resource</a>. It does not deprecate, replace, or in any
   way reduce the value of the <code>Strict-Transport-Security</code> HTTP
@@ -1254,8 +1215,8 @@ Location: https://example.com/
   together.</p>
    </section>
    <section>
-    <h2 class="heading settled" data-level="9" id="iana-considerations"><span class="secno">9. </span><span class="content">IANA Considerations</span><a class="self-link" href="#iana-considerations"></a></h2>
-    <h3 class="heading settled" data-level="9.1" id="iana-https"><span class="secno">9.1. </span><span class="content"> Upgrade-Insecure-Requests Header </span><a class="self-link" href="#iana-https"></a></h3>
+    <h2 class="heading settled" data-level="8" id="iana-considerations"><span class="secno">8. </span><span class="content">IANA Considerations</span><a class="self-link" href="#iana-considerations"></a></h2>
+    <h3 class="heading settled" data-level="8.1" id="iana-https"><span class="secno">8.1. </span><span class="content"> Upgrade-Insecure-Requests Header </span><a class="self-link" href="#iana-https"></a></h3>
     <p>The permanent message header field registry should be updated
   with the following registration: <a data-link-type="biblio" href="#biblio-rfc3864">[RFC3864]</a></p>
     <dl>
@@ -1270,7 +1231,7 @@ Location: https://example.com/
      <dt>Specification document
      <dd>This specification (See <a href="#preference">§ 3.2.1 The Upgrade-Insecure-Requests HTTP Request Header Field</a>)
     </dl>
-    <h3 class="heading settled" data-level="9.2" id="iana-directive"><span class="secno">9.2. </span><span class="content"> Upgrade-Insecure-Requests Directive </span><a class="self-link" href="#iana-directive"></a></h3>
+    <h3 class="heading settled" data-level="8.2" id="iana-directive"><span class="secno">8.2. </span><span class="content"> Upgrade-Insecure-Requests Directive </span><a class="self-link" href="#iana-directive"></a></h3>
     <p>The Content Security Policy Directive registry should be updated with the
   following registration: <a data-link-type="biblio" href="#biblio-rfc7762">[RFC7762]</a></p>
     <dl>
@@ -1281,7 +1242,7 @@ Location: https://example.com/
     </dl>
    </section>
    <section>
-    <h2 class="heading settled" data-level="10" id="acknowledgements"><span class="secno">10. </span><span class="content">Acknowledgements</span><a class="self-link" href="#acknowledgements"></a></h2>
+    <h2 class="heading settled" data-level="9" id="acknowledgements"><span class="secno">9. </span><span class="content">Acknowledgements</span><a class="self-link" href="#acknowledgements"></a></h2>
     <p>Anne van Kesteren helped ensure that the initial draft of this document was
   sane. Peter Eckersley and Daniel Kahn Gillmor clarified the problem space, and
   helped point out the impact.</p>
@@ -1337,6 +1298,7 @@ Location: https://example.com/
    <li><a href="#upgrade-insecure-requests">upgrade-insecure-requests</a><span>, in §3.1</span>
    <li><a href="#upgrade-insecure-requests-http-request-header-field">Upgrade-Insecure-Requests header field</a><span>, in §3.2.1</span>
    <li><a href="#upgrade-insecure-requests-http-request-header-field">Upgrade-Insecure-Requests HTTP request header field</a><span>, in §3.2.1</span>
+   <li><a href="#upgrade-request">Upgrade request to a potentially trustworthy URL, if appropriate</a><span>, in §4</span>
   </ul>
   <aside class="dfn-panel" data-for="term-for-appendix-B.1">
    <a href="https://tools.ietf.org/html/rfc5234#appendix-B.1">https://tools.ietf.org/html/rfc5234#appendix-B.1</a><b>Referenced in:</b>
@@ -1409,8 +1371,8 @@ Location: https://example.com/
     The upgrade-insecure-requests Content Security Policy directive </a> <a href="#ref-for-protected-resource①">(2)</a> <a href="#ref-for-protected-resource②">(3)</a>
     <li><a href="#ref-for-protected-resource③">3.4. Reporting Upgrades</a>
     <li><a href="#ref-for-protected-resource④">4.1. 
-    Upgrade request to an a priori authenticated URL, if appropriate </a>
-    <li><a href="#ref-for-protected-resource⑤">8.2. Relation to HSTS</a>
+    Upgrade request to a potentially trustworthy URL, if appropriate </a>
+    <li><a href="#ref-for-protected-resource⑤">7.2. Relation to HSTS</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-report-uri">
@@ -1422,7 +1384,7 @@ Location: https://example.com/
   <aside class="dfn-panel" data-for="term-for-send-violation-reports">
    <a href="https://www.w3.org/TR/CSP/#send-violation-reports">https://www.w3.org/TR/CSP/#send-violation-reports</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-send-violation-reports">8.1. Legacy Clients</a>
+    <li><a href="#ref-for-send-violation-reports">7.1. Legacy Clients</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-example-violation-report">
@@ -1437,31 +1399,30 @@ Location: https://example.com/
     <li><a href="#ref-for-interface-document">3.3. Policy Inheritance</a>
     <li><a href="#ref-for-interface-document①">4.2. 
     Should insecure requests be upgraded for client? </a>
-    <li><a href="#ref-for-interface-document②">6.2. CSP Violation Reports</a> <a href="#ref-for-interface-document③">(2)</a> <a href="#ref-for-interface-document④">(3)</a>
+    <li><a href="#ref-for-interface-document②">5.2. CSP Violation Reports</a> <a href="#ref-for-interface-document③">(2)</a> <a href="#ref-for-interface-document④">(3)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-concept-header-list-append">
    <a href="https://fetch.spec.whatwg.org/#concept-header-list-append">https://fetch.spec.whatwg.org/#concept-header-list-append</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-concept-header-list-append">4.1. 
-    Upgrade request to an a priori authenticated URL, if appropriate </a>
+    Upgrade request to a potentially trustworthy URL, if appropriate </a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-concept-request-client">
    <a href="https://fetch.spec.whatwg.org/#concept-request-client">https://fetch.spec.whatwg.org/#concept-request-client</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-concept-request-client">4.1. 
-    Upgrade request to an a priori authenticated URL, if appropriate </a> <a href="#ref-for-concept-request-client①">(2)</a> <a href="#ref-for-concept-request-client②">(3)</a>
-    <li><a href="#ref-for-concept-request-client③">4.2. 
-    Should insecure requests be upgraded for client? </a> <a href="#ref-for-concept-request-client④">(2)</a>
+    Upgrade request to a potentially trustworthy URL, if appropriate </a> <a href="#ref-for-concept-request-client①">(2)</a> <a href="#ref-for-concept-request-client②">(3)</a> <a href="#ref-for-concept-request-client③">(4)</a>
+    <li><a href="#ref-for-concept-request-client④">4.2. 
+    Should insecure requests be upgraded for client? </a> <a href="#ref-for-concept-request-client⑤">(2)</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="term-for-fetching">
-   <a href="https://fetch.spec.whatwg.org/#fetching">https://fetch.spec.whatwg.org/#fetching</a><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="term-for-concept-fetch">
+   <a href="https://fetch.spec.whatwg.org/#concept-fetch">https://fetch.spec.whatwg.org/#concept-fetch</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-fetching">3. Upgrading Insecure Resource Requests</a>
-    <li><a href="#ref-for-fetching①">3.1.1. Relation to "Mixed Content"</a>
-    <li><a href="#ref-for-fetching②">5. Modifications to WebSockets</a>
+    <li><a href="#ref-for-concept-fetch">3. Upgrading Insecure Resource Requests</a>
+    <li><a href="#ref-for-concept-fetch①">3.1.1. Relation to "Mixed Content"</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-concept-request-header-list">
@@ -1469,14 +1430,14 @@ Location: https://example.com/
    <ul>
     <li><a href="#ref-for-concept-request-header-list">2. Key Concepts and Terminology</a>
     <li><a href="#ref-for-concept-request-header-list①">4.1. 
-    Upgrade request to an a priori authenticated URL, if appropriate </a>
+    Upgrade request to a potentially trustworthy URL, if appropriate </a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-main-fetch">
    <a href="https://fetch.spec.whatwg.org/#main-fetch">https://fetch.spec.whatwg.org/#main-fetch</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-main-fetch">4.1. 
-    Upgrade request to an a priori authenticated URL, if appropriate </a>
+    Upgrade request to a potentially trustworthy URL, if appropriate </a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-navigation-request">
@@ -1485,8 +1446,8 @@ Location: https://example.com/
     <li><a href="#ref-for-navigation-request">3. Upgrading Insecure Resource Requests</a>
     <li><a href="#ref-for-navigation-request①">3.2. Feature Detecting Clients Capable of Upgrading</a>
     <li><a href="#ref-for-navigation-request②">4.1. 
-    Upgrade request to an a priori authenticated URL, if appropriate </a> <a href="#ref-for-navigation-request③">(2)</a> <a href="#ref-for-navigation-request④">(3)</a> <a href="#ref-for-navigation-request⑤">(4)</a> <a href="#ref-for-navigation-request⑥">(5)</a>
-    <li><a href="#ref-for-navigation-request⑦">7. Performance Considerations</a>
+    Upgrade request to a potentially trustworthy URL, if appropriate </a> <a href="#ref-for-navigation-request③">(2)</a> <a href="#ref-for-navigation-request④">(3)</a> <a href="#ref-for-navigation-request⑤">(4)</a> <a href="#ref-for-navigation-request⑥">(5)</a>
+    <li><a href="#ref-for-navigation-request⑦">6. Performance Considerations</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-concept-request">
@@ -1498,16 +1459,9 @@ Location: https://example.com/
     The Upgrade-Insecure-Requests HTTP Request Header Field </a> <a href="#ref-for-concept-request⑤">(2)</a> <a href="#ref-for-concept-request⑥">(3)</a>
     <li><a href="#ref-for-concept-request⑦">3.4. Reporting Upgrades</a>
     <li><a href="#ref-for-concept-request⑧">4.1. 
-    Upgrade request to an a priori authenticated URL, if appropriate </a>
+    Upgrade request to a potentially trustworthy URL, if appropriate </a>
     <li><a href="#ref-for-concept-request⑨">4.2. 
     Should insecure requests be upgraded for client? </a> <a href="#ref-for-concept-request①⓪">(2)</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="term-for-concept-request-target-browsing-context">
-   <a href="https://fetch.spec.whatwg.org/#concept-request-target-browsing-context">https://fetch.spec.whatwg.org/#concept-request-target-browsing-context</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-concept-request-target-browsing-context">4.1. 
-    Upgrade request to an a priori authenticated URL, if appropriate </a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-concept-request-url">
@@ -1516,7 +1470,7 @@ Location: https://example.com/
     <li><a href="#ref-for-concept-request-url">3.2.1. 
     The Upgrade-Insecure-Requests HTTP Request Header Field </a> <a href="#ref-for-concept-request-url①">(2)</a>
     <li><a href="#ref-for-concept-request-url②">4.1. 
-    Upgrade request to an a priori authenticated URL, if appropriate </a> <a href="#ref-for-concept-request-url③">(2)</a> <a href="#ref-for-concept-request-url④">(3)</a> <a href="#ref-for-concept-request-url⑤">(4)</a> <a href="#ref-for-concept-request-url⑥">(5)</a> <a href="#ref-for-concept-request-url⑦">(6)</a> <a href="#ref-for-concept-request-url⑧">(7)</a> <a href="#ref-for-concept-request-url⑨">(8)</a>
+    Upgrade request to a potentially trustworthy URL, if appropriate </a> <a href="#ref-for-concept-request-url③">(2)</a> <a href="#ref-for-concept-request-url④">(3)</a> <a href="#ref-for-concept-request-url⑤">(4)</a> <a href="#ref-for-concept-request-url⑥">(5)</a> <a href="#ref-for-concept-request-url⑦">(6)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-browsing-context">
@@ -1546,7 +1500,7 @@ Location: https://example.com/
    <a href="https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element">https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-the-iframe-element">4.1. 
-    Upgrade request to an a priori authenticated URL, if appropriate </a>
+    Upgrade request to a potentially trustworthy URL, if appropriate </a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-incumbent-settings-object">
@@ -1562,13 +1516,7 @@ Location: https://example.com/
    <ul>
     <li><a href="#ref-for-nested-browsing-context">3.3. Policy Inheritance</a> <a href="#ref-for-nested-browsing-context①">(2)</a>
     <li><a href="#ref-for-nested-browsing-context②">4.1. 
-    Upgrade request to an a priori authenticated URL, if appropriate </a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="term-for-relevant-settings-object-for-a-script">
-   <a href="https://html.spec.whatwg.org/multipage/webappapis.html#relevant-settings-object-for-a-script">https://html.spec.whatwg.org/multipage/webappapis.html#relevant-settings-object-for-a-script</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-relevant-settings-object-for-a-script">5. Modifications to WebSockets</a>
+    Upgrade request to a potentially trustworthy URL, if appropriate </a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-responsible-browsing-context">
@@ -1585,26 +1533,11 @@ Location: https://example.com/
     Should insecure requests be upgraded for client? </a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="term-for-a-priori-authenticated-url">
-   <a href="https://w3c.github.io/webappsec/specs/mixedcontent/#a-priori-authenticated-url">https://w3c.github.io/webappsec/specs/mixedcontent/#a-priori-authenticated-url</a><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="term-for-concept-environment-target-browsing-context">
+   <a href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-environment-target-browsing-context">https://html.spec.whatwg.org/multipage/webappapis.html#concept-environment-target-browsing-context</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-a-priori-authenticated-url">1.3. Recommendations</a>
-    <li><a href="#ref-for-a-priori-authenticated-url①">3. Upgrading Insecure Resource Requests</a>
-    <li><a href="#ref-for-a-priori-authenticated-url②">3.2.1. 
-    The Upgrade-Insecure-Requests HTTP Request Header Field </a> <a href="#ref-for-a-priori-authenticated-url③">(2)</a> <a href="#ref-for-a-priori-authenticated-url④">(3)</a>
-    <li><a href="#ref-for-a-priori-authenticated-url⑤">4.1. 
-    Upgrade request to an a priori authenticated URL, if appropriate </a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="term-for-a-priori-authenticated-url">
-   <a href="https://w3c.github.io/webappsec/specs/mixedcontent/#a-priori-authenticated-url">https://w3c.github.io/webappsec/specs/mixedcontent/#a-priori-authenticated-url</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-a-priori-authenticated-url">1.3. Recommendations</a>
-    <li><a href="#ref-for-a-priori-authenticated-url①">3. Upgrading Insecure Resource Requests</a>
-    <li><a href="#ref-for-a-priori-authenticated-url②">3.2.1. 
-    The Upgrade-Insecure-Requests HTTP Request Header Field </a> <a href="#ref-for-a-priori-authenticated-url③">(2)</a> <a href="#ref-for-a-priori-authenticated-url④">(3)</a>
-    <li><a href="#ref-for-a-priori-authenticated-url⑤">4.1. 
-    Upgrade request to an a priori authenticated URL, if appropriate </a>
+    <li><a href="#ref-for-concept-environment-target-browsing-context">4.1. 
+    Upgrade request to a potentially trustworthy URL, if appropriate </a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-block-all-mixed-content">
@@ -1615,7 +1548,7 @@ Location: https://example.com/
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-embedding-document">
-   <a href="https://w3c.github.io/webappsec/specs/mixedcontent/#embedding-document">https://w3c.github.io/webappsec/specs/mixedcontent/#embedding-document</a><b>Referenced in:</b>
+   <a href="https://w3c.github.io/webappsec-mixed-content/#embedding-document">https://w3c.github.io/webappsec-mixed-content/#embedding-document</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-embedding-document">3.3. Policy Inheritance</a> <a href="#ref-for-embedding-document①">(2)</a>
     <li><a href="#ref-for-embedding-document②">4.2. 
@@ -1633,12 +1566,6 @@ Location: https://example.com/
    <a href="https://tools.ietf.org/html/rfc6454#section-3.2">https://tools.ietf.org/html/rfc6454#section-3.2</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-section-3.2">2. Key Concepts and Terminology</a> <a href="#ref-for-section-3.2①">(2)</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="term-for-section-4.1">
-   <a href="https://tools.ietf.org/html/rfc6455#section-4.1">https://tools.ietf.org/html/rfc6455#section-4.1</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-section-4.1">5. Modifications to WebSockets</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-section-8.2">
@@ -1673,7 +1600,7 @@ Location: https://example.com/
     <li><a href="#ref-for-section-6.1⑥">3.2. Feature Detecting Clients Capable of Upgrading</a>
     <li><a href="#ref-for-section-6.1⑦">3.2.1. 
     The Upgrade-Insecure-Requests HTTP Request Header Field </a>
-    <li><a href="#ref-for-section-6.1⑧">6.1. Interaction with HSTS</a>
+    <li><a href="#ref-for-section-6.1⑧">5.1. Interaction with HSTS</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-section-8.2">
@@ -1716,15 +1643,19 @@ Location: https://example.com/
     The Upgrade-Insecure-Requests HTTP Request Header Field </a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="term-for-concept-url">
-   <a href="http://www.w3.org/TR/url/#concept-url">http://www.w3.org/TR/url/#concept-url</a><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="term-for-potentially-trustworthy-url">
+   <a href="https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-url">https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-url</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-concept-url">3.1. 
-    The upgrade-insecure-requests Content Security Policy directive </a>
+    <li><a href="#ref-for-potentially-trustworthy-url">1.3. Recommendations</a>
+    <li><a href="#ref-for-potentially-trustworthy-url①">3. Upgrading Insecure Resource Requests</a>
+    <li><a href="#ref-for-potentially-trustworthy-url②">3.2.1. 
+    The Upgrade-Insecure-Requests HTTP Request Header Field </a> <a href="#ref-for-potentially-trustworthy-url③">(2)</a> <a href="#ref-for-potentially-trustworthy-url④">(3)</a>
+    <li><a href="#ref-for-potentially-trustworthy-url⑤">4.1. 
+    Upgrade request to a potentially trustworthy URL, if appropriate </a> <a href="#ref-for-potentially-trustworthy-url⑥">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-concept-url-host">
-   <a href="http://www.w3.org/TR/url/#concept-url-host">http://www.w3.org/TR/url/#concept-url-host</a><b>Referenced in:</b>
+   <a href="https://url.spec.whatwg.org/#concept-url-host">https://url.spec.whatwg.org/#concept-url-host</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-concept-url-host">1.1. Goals</a>
     <li><a href="#ref-for-concept-url-host①">2. Key Concepts and Terminology</a>
@@ -1734,32 +1665,39 @@ Location: https://example.com/
     <li><a href="#ref-for-concept-url-host④">3.2.1. 
     The Upgrade-Insecure-Requests HTTP Request Header Field </a> <a href="#ref-for-concept-url-host⑤">(2)</a> <a href="#ref-for-concept-url-host⑥">(3)</a>
     <li><a href="#ref-for-concept-url-host⑦">4.1. 
-    Upgrade request to an a priori authenticated URL, if appropriate </a> <a href="#ref-for-concept-url-host⑧">(2)</a>
+    Upgrade request to a potentially trustworthy URL, if appropriate </a> <a href="#ref-for-concept-url-host⑧">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-concept-url-path">
-   <a href="http://www.w3.org/TR/url/#concept-url-path">http://www.w3.org/TR/url/#concept-url-path</a><b>Referenced in:</b>
+   <a href="https://url.spec.whatwg.org/#concept-url-path">https://url.spec.whatwg.org/#concept-url-path</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-concept-url-path">1.1. Goals</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-concept-url-port">
-   <a href="http://www.w3.org/TR/url/#concept-url-port">http://www.w3.org/TR/url/#concept-url-port</a><b>Referenced in:</b>
+   <a href="https://url.spec.whatwg.org/#concept-url-port">https://url.spec.whatwg.org/#concept-url-port</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-concept-url-port">3. Upgrading Insecure Resource Requests</a>
     <li><a href="#ref-for-concept-url-port①">3.1. 
     The upgrade-insecure-requests Content Security Policy directive </a>
     <li><a href="#ref-for-concept-url-port②">4.1. 
-    Upgrade request to an a priori authenticated URL, if appropriate </a> <a href="#ref-for-concept-url-port③">(2)</a> <a href="#ref-for-concept-url-port④">(3)</a>
+    Upgrade request to a potentially trustworthy URL, if appropriate </a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-concept-url-scheme">
-   <a href="http://www.w3.org/TR/url/#concept-url-scheme">http://www.w3.org/TR/url/#concept-url-scheme</a><b>Referenced in:</b>
+   <a href="https://url.spec.whatwg.org/#concept-url-scheme">https://url.spec.whatwg.org/#concept-url-scheme</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-concept-url-scheme">1.1. Goals</a>
     <li><a href="#ref-for-concept-url-scheme①">2. Key Concepts and Terminology</a>
     <li><a href="#ref-for-concept-url-scheme②">4.1. 
-    Upgrade request to an a priori authenticated URL, if appropriate </a> <a href="#ref-for-concept-url-scheme③">(2)</a>
+    Upgrade request to a potentially trustworthy URL, if appropriate </a> <a href="#ref-for-concept-url-scheme③">(2)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-concept-url">
+   <a href="https://url.spec.whatwg.org/#concept-url">https://url.spec.whatwg.org/#concept-url</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-concept-url">3.1. 
+    The upgrade-insecure-requests Content Security Policy directive </a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-worker">
@@ -1767,7 +1705,7 @@ Location: https://example.com/
    <ul>
     <li><a href="#ref-for-worker">4.2. 
     Should insecure requests be upgraded for client? </a>
-    <li><a href="#ref-for-worker①">6.2. CSP Violation Reports</a> <a href="#ref-for-worker②">(2)</a>
+    <li><a href="#ref-for-worker①">5.2. CSP Violation Reports</a> <a href="#ref-for-worker②">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-script-settings-for-workers">
@@ -1808,12 +1746,11 @@ Location: https://example.com/
     <ul>
      <li><span class="dfn-paneled" id="term-for-concept-header-list-append">append</span>
      <li><span class="dfn-paneled" id="term-for-concept-request-client">client</span>
-     <li><span class="dfn-paneled" id="term-for-fetching">fetching</span>
-     <li><span class="dfn-paneled" id="term-for-concept-request-header-list">header-list</span>
+     <li><span class="dfn-paneled" id="term-for-concept-fetch">fetch</span>
+     <li><span class="dfn-paneled" id="term-for-concept-request-header-list">header list</span>
      <li><span class="dfn-paneled" id="term-for-main-fetch">main fetch</span>
      <li><span class="dfn-paneled" id="term-for-navigation-request">navigation request</span>
      <li><span class="dfn-paneled" id="term-for-concept-request">request</span>
-     <li><span class="dfn-paneled" id="term-for-concept-request-target-browsing-context">target browsing context</span>
      <li><span class="dfn-paneled" id="term-for-concept-request-url">url</span>
     </ul>
    <li>
@@ -1825,15 +1762,13 @@ Location: https://example.com/
      <li><span class="dfn-paneled" id="term-for-the-iframe-element">iframe</span>
      <li><span class="dfn-paneled" id="term-for-incumbent-settings-object">incumbent settings object</span>
      <li><span class="dfn-paneled" id="term-for-nested-browsing-context">nested browsing context</span>
-     <li><span class="dfn-paneled" id="term-for-relevant-settings-object-for-a-script">relevant settings object for a script</span>
      <li><span class="dfn-paneled" id="term-for-responsible-browsing-context">responsible browsing context</span>
      <li><span class="dfn-paneled" id="term-for-responsible-document">responsible document</span>
+     <li><span class="dfn-paneled" id="term-for-concept-environment-target-browsing-context">target browsing context</span>
     </ul>
    <li>
     <a data-link-type="biblio">[MIX]</a> defines the following terms:
     <ul>
-     <li><span class="dfn-paneled" id="term-for-a-priori-authenticated-url">a priori authenticated</span>
-     <li><span class="dfn-paneled" id="term-for-a-priori-authenticated-url①">a priori authenticated url</span>
      <li><span class="dfn-paneled" id="term-for-block-all-mixed-content">block-all-mixed-content</span>
      <li><span class="dfn-paneled" id="term-for-embedding-document">embedding document</span>
      <li><span class="dfn-paneled" id="term-for-strict-mode">strict mode</span>
@@ -1842,11 +1777,6 @@ Location: https://example.com/
     <a data-link-type="biblio">[rfc6454]</a> defines the following terms:
     <ul>
      <li><span class="dfn-paneled" id="term-for-section-3.2">origin</span>
-    </ul>
-   <li>
-    <a data-link-type="biblio">[RFC6455]</a> defines the following terms:
-    <ul>
-     <li><span class="dfn-paneled" id="term-for-section-4.1">establish a websocket connection</span>
     </ul>
    <li>
     <a data-link-type="biblio">[RFC6797]</a> defines the following terms:
@@ -1876,13 +1806,18 @@ Location: https://example.com/
      <li><span class="dfn-paneled" id="term-for-section-2">prefer</span>
     </ul>
    <li>
+    <a data-link-type="biblio">[secure-contexts]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="term-for-potentially-trustworthy-url">potentially trustworthy url</span>
+    </ul>
+   <li>
     <a data-link-type="biblio">[URL]</a> defines the following terms:
     <ul>
-     <li><span class="dfn-paneled" id="term-for-concept-url">URL</span>
      <li><span class="dfn-paneled" id="term-for-concept-url-host">host</span>
      <li><span class="dfn-paneled" id="term-for-concept-url-path">path</span>
      <li><span class="dfn-paneled" id="term-for-concept-url-port">port</span>
      <li><span class="dfn-paneled" id="term-for-concept-url-scheme">scheme</span>
+     <li><span class="dfn-paneled" id="term-for-concept-url">url</span>
     </ul>
    <li>
     <a data-link-type="biblio">[WORKERS]</a> defines the following terms:
@@ -1912,14 +1847,14 @@ Location: https://example.com/
    <dd>G. Klyne; M. Nottingham; J. Mogul. <a href="https://tools.ietf.org/html/rfc3864">Registration Procedures for Message Header Fields</a>. September 2004. Best Current Practice. URL: <a href="https://tools.ietf.org/html/rfc3864">https://tools.ietf.org/html/rfc3864</a>
    <dt id="biblio-rfc6454">[RFC6454]
    <dd>A. Barth. <a href="https://tools.ietf.org/html/rfc6454">The Web Origin Concept</a>. December 2011. Proposed Standard. URL: <a href="https://tools.ietf.org/html/rfc6454">https://tools.ietf.org/html/rfc6454</a>
-   <dt id="biblio-rfc6455">[RFC6455]
-   <dd>I. Fette; A. Melnikov. <a href="https://tools.ietf.org/html/rfc6455">The WebSocket Protocol</a>. December 2011. Proposed Standard. URL: <a href="https://tools.ietf.org/html/rfc6455">https://tools.ietf.org/html/rfc6455</a>
    <dt id="biblio-rfc6797">[RFC6797]
    <dd>J. Hodges; C. Jackson; A. Barth. <a href="https://tools.ietf.org/html/rfc6797">HTTP Strict Transport Security (HSTS)</a>. November 2012. Proposed Standard. URL: <a href="https://tools.ietf.org/html/rfc6797">https://tools.ietf.org/html/rfc6797</a>
    <dt id="biblio-rfc7231">[RFC7231]
    <dd>R. Fielding, Ed.; J. Reschke, Ed.. <a href="https://httpwg.org/specs/rfc7231.html">Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content</a>. June 2014. Proposed Standard. URL: <a href="https://httpwg.org/specs/rfc7231.html">https://httpwg.org/specs/rfc7231.html</a>
    <dt id="biblio-rfc7762">[RFC7762]
    <dd>M. West. <a href="https://tools.ietf.org/html/rfc7762">Initial Assignment for the Content Security Policy Directives Registry</a>. January 2016. Informational. URL: <a href="https://tools.ietf.org/html/rfc7762">https://tools.ietf.org/html/rfc7762</a>
+   <dt id="biblio-secure-contexts">[SECURE-CONTEXTS]
+   <dd>Mike West. <a href="https://www.w3.org/TR/secure-contexts/">Secure Contexts</a>. 15 September 2016. CR. URL: <a href="https://www.w3.org/TR/secure-contexts/">https://www.w3.org/TR/secure-contexts/</a>
    <dt id="biblio-url">[URL]
    <dd>Anne van Kesteren. <a href="https://url.spec.whatwg.org/">URL Standard</a>. Living Standard. URL: <a href="https://url.spec.whatwg.org/">https://url.spec.whatwg.org/</a>
    <dt id="biblio-workers">[WORKERS]
@@ -1969,8 +1904,8 @@ Location: https://example.com/
     <li><a href="#ref-for-preloadable-hsts-host">3.2.1. 
     The Upgrade-Insecure-Requests HTTP Request Header Field </a> <a href="#ref-for-preloadable-hsts-host①">(2)</a> <a href="#ref-for-preloadable-hsts-host②">(3)</a>
     <li><a href="#ref-for-preloadable-hsts-host③">4.1. 
-    Upgrade request to an a priori authenticated URL, if appropriate </a>
-    <li><a href="#ref-for-preloadable-hsts-host④">7. Performance Considerations</a> <a href="#ref-for-preloadable-hsts-host⑤">(2)</a>
+    Upgrade request to a potentially trustworthy URL, if appropriate </a>
+    <li><a href="#ref-for-preloadable-hsts-host④">6. Performance Considerations</a> <a href="#ref-for-preloadable-hsts-host⑤">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="insecure-requests-policy">
@@ -1988,10 +1923,9 @@ Location: https://example.com/
    <ul>
     <li><a href="#ref-for-valdef-insecure-requests-policy-do-not-upgrade">3. Upgrading Insecure Resource Requests</a>
     <li><a href="#ref-for-valdef-insecure-requests-policy-do-not-upgrade①">4.1. 
-    Upgrade request to an a priori authenticated URL, if appropriate </a>
+    Upgrade request to a potentially trustworthy URL, if appropriate </a>
     <li><a href="#ref-for-valdef-insecure-requests-policy-do-not-upgrade②">4.2. 
     Should insecure requests be upgraded for client? </a> <a href="#ref-for-valdef-insecure-requests-policy-do-not-upgrade③">(2)</a>
-    <li><a href="#ref-for-valdef-insecure-requests-policy-do-not-upgrade④">5. Modifications to WebSockets</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="valdef-insecure-requests-policy-upgrade">
@@ -2009,7 +1943,7 @@ Location: https://example.com/
     The upgrade-insecure-requests Content Security Policy directive </a>
     <li><a href="#ref-for-upgrade-insecure-navigations-set①">3.3. Policy Inheritance</a> <a href="#ref-for-upgrade-insecure-navigations-set②">(2)</a> <a href="#ref-for-upgrade-insecure-navigations-set③">(3)</a> <a href="#ref-for-upgrade-insecure-navigations-set④">(4)</a> <a href="#ref-for-upgrade-insecure-navigations-set⑤">(5)</a> <a href="#ref-for-upgrade-insecure-navigations-set⑥">(6)</a>
     <li><a href="#ref-for-upgrade-insecure-navigations-set⑦">4.1. 
-    Upgrade request to an a priori authenticated URL, if appropriate </a>
+    Upgrade request to a potentially trustworthy URL, if appropriate </a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="upgrade-insecure-requests">
@@ -2027,10 +1961,10 @@ Location: https://example.com/
     <li><a href="#ref-for-upgrade-insecure-requests①⑧">3.4. Reporting Upgrades</a>
     <li><a href="#ref-for-upgrade-insecure-requests①⑨">4.2. 
     Should insecure requests be upgraded for client? </a>
-    <li><a href="#ref-for-upgrade-insecure-requests②⓪">6.1. Interaction with HSTS</a>
-    <li><a href="#ref-for-upgrade-insecure-requests②①">6.2. CSP Violation Reports</a>
-    <li><a href="#ref-for-upgrade-insecure-requests②②">8.1. Legacy Clients</a>
-    <li><a href="#ref-for-upgrade-insecure-requests②③">8.2. Relation to HSTS</a> <a href="#ref-for-upgrade-insecure-requests②④">(2)</a>
+    <li><a href="#ref-for-upgrade-insecure-requests②⓪">5.1. Interaction with HSTS</a>
+    <li><a href="#ref-for-upgrade-insecure-requests②①">5.2. CSP Violation Reports</a>
+    <li><a href="#ref-for-upgrade-insecure-requests②②">7.1. Legacy Clients</a>
+    <li><a href="#ref-for-upgrade-insecure-requests②③">7.2. Relation to HSTS</a> <a href="#ref-for-upgrade-insecure-requests②④">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="upgrade-insecure-requests-http-request-header-field">
@@ -2041,7 +1975,18 @@ Location: https://example.com/
     <li><a href="#ref-for-upgrade-insecure-requests-http-request-header-field②">3.2.1. 
     The Upgrade-Insecure-Requests HTTP Request Header Field </a> <a href="#ref-for-upgrade-insecure-requests-http-request-header-field③">(2)</a> <a href="#ref-for-upgrade-insecure-requests-http-request-header-field④">(3)</a> <a href="#ref-for-upgrade-insecure-requests-http-request-header-field⑤">(4)</a> <a href="#ref-for-upgrade-insecure-requests-http-request-header-field⑥">(5)</a> <a href="#ref-for-upgrade-insecure-requests-http-request-header-field⑦">(6)</a> <a href="#ref-for-upgrade-insecure-requests-http-request-header-field⑧">(7)</a> <a href="#ref-for-upgrade-insecure-requests-http-request-header-field⑨">(8)</a>
     <li><a href="#ref-for-upgrade-insecure-requests-http-request-header-field①⓪">4.1. 
-    Upgrade request to an a priori authenticated URL, if appropriate </a> <a href="#ref-for-upgrade-insecure-requests-http-request-header-field①①">(2)</a>
+    Upgrade request to a potentially trustworthy URL, if appropriate </a> <a href="#ref-for-upgrade-insecure-requests-http-request-header-field①①">(2)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="upgrade-request">
+   <b><a href="#upgrade-request">#upgrade-request</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-upgrade-request">3. Upgrading Insecure Resource Requests</a> <a href="#ref-for-upgrade-request">(2)</a>
+    <li><a href="#ref-for-upgrade-request">3.1.1. Relation to "Mixed Content"</a>
+    <li><a href="#ref-for-upgrade-request">3.2.1. 
+    The Upgrade-Insecure-Requests HTTP Request Header Field </a>
+    <li><a href="#ref-for-upgrade-request">4.1. 
+    Upgrade request to a potentially trustworthy URL, if appropriate </a>
    </ul>
   </aside>
 <script>/* script-dfn-panel */
