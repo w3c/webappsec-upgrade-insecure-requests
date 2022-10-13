@@ -50,7 +50,7 @@ spec: HTML; urlPrefix: https://html.spec.whatwg.org/multipage/
       text: creating a new document object; url: create-a-document-object
       text: nested browsing context
     urlPrefix: webappapis.html
-      text: environment settings object; url: settings-object
+      text: environment settings object
       text: incumbent settings object
       text: responsible document
       text: responsible browsing context
